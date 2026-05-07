@@ -1,0 +1,3041 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRModeria v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary:   #F7C6D9;
+    --secondary: #E89AB8;
+    --bg:        #FFF1F6;
+    --contrast:  #1A1A1A;
+    --white:     #ffffff;
+
+    /* Derived */
+    --rose:      #E89AB8;
+    --rose-dark: #c4628e;
+    --rose-light:#F7C6D9;
+    --blush:     #FFF1F6;
+    --cream:     #FFF8FB;
+    --sand:      #fdeef5;
+    --border:    #f0d0e0;
+    --border-strong: #daa8c0;
+
+    --text:      #1A1A1A;
+    --text-muted:#7a6472;
+    --text-light:#bda8b4;
+
+    --green:        #2d6a4f;
+    --green-light:  #d8f3dc;
+    --amber:        #9c6b00;
+    --amber-light:  #fff3cc;
+    --blue:         #1a4f8c;
+    --blue-light:   #dceeff;
+    --purple:       #6b3fa0;
+    --purple-light: #ede0ff;
+    --red:          #b52929;
+    --red-light:    #ffe0e0;
+
+    --shadow:    0 1px 8px rgba(200,100,150,0.08), 0 4px 20px rgba(200,100,150,0.05);
+    --shadow-lg: 0 8px 40px rgba(200,100,150,0.14);
+
+    --radius-sm: 6px;
+    --radius:    10px;
+    --radius-lg: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 228px;
+    background: var(--contrast);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    padding: 32px 24px 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .sidebar-logo h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--primary);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .sidebar-logo .logo-sub {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 5px;
+  }
+
+  .sidebar-logo .logo-line {
+    height: 1px;
+    width: 20px;
+    background: var(--secondary);
+    opacity: 0.5;
+  }
+
+  .sidebar-logo p {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  .sidebar nav { padding: 20px 0; flex: 1; }
+
+  .nav-section-label {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+    padding: 14px 24px 6px;
+    font-weight: 400;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 24px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+    border-left: 2px solid transparent;
+    position: relative;
+  }
+
+  .nav-item:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.04); }
+
+  .nav-item.active {
+    color: var(--primary);
+    border-left-color: var(--primary);
+    background: rgba(247,198,217,0.07);
+    font-weight: 400;
+  }
+
+  .nav-icon {
+    font-size: 13px;
+    width: 18px;
+    text-align: center;
+    opacity: 0.7;
+  }
+
+  .nav-item.active .nav-icon { opacity: 1; }
+
+  .sidebar-date {
+    padding: 18px 24px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+  }
+
+  /* ── MAIN ── */
+  .main { margin-left: 228px; min-height: 100vh; }
+
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .topbar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--contrast);
+    letter-spacing: 0.5px;
+  }
+
+  .topbar-actions { display: flex; gap: 10px; align-items: center; }
+
+  .btn {
+    padding: 8px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 12.5px;
+    font-weight: 400;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    font-family: 'Jost', sans-serif;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-primary {
+    background: var(--contrast);
+    color: var(--white);
+  }
+  .btn-primary:hover { background: #333; }
+
+  .btn-accent {
+    background: var(--primary);
+    color: var(--contrast);
+  }
+  .btn-accent:hover { background: var(--secondary); color: var(--white); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--text-muted);
+  }
+  .btn-outline:hover { border-color: var(--rose-dark); color: var(--rose-dark); }
+
+  .btn-sm { padding: 6px 13px; font-size: 11.5px; }
+
+  .content { padding: 28px 32px; }
+
+  /* ── METRIC CARDS ── */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+
+  .metric-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 16px 16px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--primary);
+  }
+
+  .metric-label {
+    font-size: 10px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+
+  .metric-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .metric-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 30px;
+    font-size: 10.5px;
+    font-weight: 400;
+    margin-top: 6px;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-a { background: var(--green-light); color: var(--green); }
+  .badge-b { background: var(--blue-light); color: var(--blue); }
+  .badge-c { background: var(--amber-light); color: var(--amber); }
+  .badge-new { background: var(--purple-light); color: var(--purple); }
+  .badge-inactive { background: var(--red-light); color: var(--red); }
+
+  /* ── SECTIONS ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--contrast);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .filter-bar input,
+  .filter-bar select {
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border 0.15s;
+  }
+
+  .filter-bar input:focus,
+  .filter-bar select:focus { border-color: var(--secondary); background: var(--white); }
+
+  .filter-bar input { min-width: 220px; }
+  .filter-bar select { min-width: 140px; }
+
+  .filter-label {
+    font-size: 11px;
+    color: var(--text-light);
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; table-layout: fixed; }
+
+  thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+
+  th {
+    padding: 10px 10px;
+    text-align: left;
+    font-weight: 400;
+    font-size: 10px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    font-family: 'Jost', sans-serif;
+    overflow: hidden;
+  }
+
+  th:hover { color: var(--rose-dark); }
+  th .sort-arrow { margin-left: 3px; opacity: 0.4; }
+
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    color: var(--text);
+    font-weight: 300;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Column widths */
+  #clientes-table th:nth-child(1), #clientes-table td:nth-child(1) { width: 22%; }
+  #clientes-table th:nth-child(2), #clientes-table td:nth-child(2) { width: 7%; }
+  #clientes-table th:nth-child(3), #clientes-table td:nth-child(3) { width: 9%; }
+  #clientes-table th:nth-child(4), #clientes-table td:nth-child(4) { width: 6%; }
+  #clientes-table th:nth-child(5), #clientes-table td:nth-child(5) { width: 6%; }
+  #clientes-table th:nth-child(6), #clientes-table td:nth-child(6) { width: 6%; }
+  #clientes-table th:nth-child(7), #clientes-table td:nth-child(7) { width: 11%; }
+  #clientes-table th:nth-child(8), #clientes-table td:nth-child(8) { width: 11%; }
+  #clientes-table th:nth-child(9), #clientes-table td:nth-child(9) { width: 16%; }
+  #clientes-table th:nth-child(10), #clientes-table td:nth-child(10) { width: 6%; }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--cream); }
+
+  .cliente-name { font-weight: 400; color: var(--contrast); }
+
+  .vendedor-chip {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+  }
+
+  .chip-raul   { background: var(--green-light); color: var(--green); }
+  .chip-estela { background: var(--primary); color: var(--rose-dark); }
+  .chip-sem    { background: #f0f0f0; color: #999; }
+
+  .tag-tam {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--sand);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--rose-dark);
+    letter-spacing: 0.3px;
+  }
+
+  .classification-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+  }
+
+  .dot-a    { background: var(--green-light);  color: var(--green);  }
+  .dot-b    { background: var(--blue-light);   color: var(--blue);   }
+  .dot-c    { background: var(--amber-light);  color: var(--amber);  }
+  .dot-new  { background: var(--purple-light); color: var(--purple); }
+  .dot-inactive { background: var(--red-light); color: var(--red); }
+
+  .date-info { font-size: 12px; color: var(--text-muted); }
+  .date-warn { color: var(--amber); font-weight: 400; }
+  .date-ok   { color: var(--green); }
+
+  .spec-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: help;
+    font-weight: 300;
+  }
+
+  .action-btn {
+    padding: 5px 11px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 11.5px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+  }
+
+  .action-btn:hover {
+    border-color: var(--rose-dark);
+    color: var(--rose-dark);
+    background: var(--sand);
+  }
+
+  /* ── PAGINATION ── */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-light);
+  }
+
+  .pag-btns { display: flex; gap: 6px; }
+  .pag-btn {
+    padding: 5px 11px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: transparent;
+    font-size: 12px;
+    font-family: 'Jost', sans-serif;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .pag-btn:hover, .pag-btn.active {
+    background: var(--contrast);
+    color: var(--white);
+    border-color: var(--contrast);
+  }
+  .pag-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* ── SUGESTÕES ── */
+  .sugestoes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .sugestao-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .sugestao-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sugestao-item:last-child { border-bottom: none; }
+  .sugestao-info p { font-weight: 400; font-size: 13px; color: var(--contrast); }
+  .sugestao-info span { font-size: 11px; color: var(--text-light); font-weight: 300; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,26,26,0.55);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+    pointer-events: none;
+  }
+
+  .modal-overlay.open {
+    display: flex;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    width: 620px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--white);
+    z-index: 1;
+  }
+
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    color: var(--contrast);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+
+  .modal-close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    transition: all 0.15s;
+  }
+
+  .modal-close:hover { background: var(--bg); color: var(--rose-dark); border-color: var(--rose-dark); }
+
+  .modal-body { padding: 22px 28px; }
+
+  .form-group { margin-bottom: 18px; }
+  .form-label {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 400;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 6px;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border 0.15s, background 0.15s;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--secondary);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(232,154,184,0.12);
+  }
+
+  .form-textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+  .form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  .modal-footer {
+    padding: 18px 28px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    background: var(--bg);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  }
+
+  /* ── CHARTS ── */
+  .chart-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+
+  .chart-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .chart-card-title {
+    font-size: 10px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+    font-weight: 400;
+  }
+
+  .pie-wrap { display: flex; align-items: center; gap: 16px; }
+  .pie-legend { flex: 1; }
+  .pie-legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; font-weight: 300; }
+  .pie-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .bar-item { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 12px; }
+  .bar-label { width: 32px; color: var(--text-light); text-align: right; font-size: 11px; }
+  .bar-track { flex: 1; background: var(--bg); border-radius: 3px; height: 8px; overflow: hidden; }
+  .bar-fill  { height: 100%; border-radius: 3px; }
+  .bar-count { width: 24px; color: var(--text-light); font-size: 11px; }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+    gap: 0;
+  }
+
+  .tab {
+    padding: 10px 20px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text-light);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+  }
+
+  .tab.active { color: var(--contrast); border-bottom-color: var(--secondary); font-weight: 400; }
+  .tab:hover  { color: var(--rose-dark); }
+
+  /* ── MISC ── */
+  .aniv-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .aniv-item:last-child { border-bottom: none; }
+
+  .compra-form {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .inativa-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    background: var(--red-light);
+    color: var(--red);
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 400;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .notification-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--secondary);
+    border-radius: 50%;
+    margin-left: 5px;
+    vertical-align: middle;
+  }
+
+  .progress-bar { height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+  .progress-fill { height: 100%; border-radius: 3px; }
+
+  .scroll-table { overflow-x: auto; }
+
+  .script-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    margin-top: 6px;
+  }
+
+  .script-intro {
+    font-size: 11.5px;
+    color: var(--text-light);
+    font-weight: 300;
+    margin-bottom: 10px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .script-text {
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.7;
+    font-weight: 300;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin: 10px 0 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* Scripts: 2 colunas no desktop, 1 no mobile — altura automática, sem overflow oculto */
+  .scripts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  .vend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .vend-item:last-child { border-bottom: none; }
+
+  .scripts-grid .sugestao-card {
+    height: auto;
+    overflow: visible;
+  }
+
+  .copy-toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--contrast);
+    color: var(--white);
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .copy-toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="copy-toast" id="copy-toast">Script copiado! ✓</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <h1>CRModeria</h1>
+    <div class="logo-sub">
+      <div class="logo-line"></div>
+      <p>Gestão de Clientes</p>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-section-label">Principal</div>
+    <div class="nav-item active" onclick="goPage('dashboard')">
+      <span class="nav-icon">◈</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="goPage('clientes')">
+      <span class="nav-icon">◉</span> Clientes
+      <span class="notification-dot"></span>
+    </div>
+    <div class="nav-section-label">Ações</div>
+    <div class="nav-item" onclick="goPage('sugestoes')">
+      <span class="nav-icon">◆</span> Sugestões do Dia
+    </div>
+    <div class="nav-item" onclick="goPage('compras')">
+      <span class="nav-icon">◐</span> Registrar Compra
+    </div>
+    <div class="nav-section-label">Gestão</div>
+    <div class="nav-item" onclick="goPage('inativas')">
+      <span class="nav-icon">◌</span> Inativas
+    </div>
+    <div class="nav-item" onclick="goPage('aniversarios')">
+      <span class="nav-icon">♡</span> Aniversários
+    </div>
+    <div class="nav-item" onclick="goPage('vendedores')">
+      <span class="nav-icon">◎</span> Vendedores
+    </div>
+    <div class="nav-item" onclick="goPage('scripts')">
+      <span class="nav-icon">✦</span> Scripts
+    </div>
+    <div class="nav-item" onclick="goPage('importar')">
+      <span class="nav-icon">↑</span> Importar Clientes
+    </div>
+  </nav>
+  <div class="sidebar-date" id="sidebar-date"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="topbar-actions">
+      <span id="sync-status" style="font-size:12px;color:var(--text-muted);margin-right:6px">💾 Local</span>
+      <button class="btn btn-outline btn-sm" onclick="sincronizarAgora()">↻ Sincronizar</button>
+      <button class="btn btn-outline btn-sm" onclick="exportCSV()">↓ Exportar</button>
+      <button class="btn btn-accent btn-sm" onclick="openModal('new')">+ Nova Cliente</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ========== DASHBOARD ========== -->
+    <div class="page active" id="page-dashboard">
+      <div class="metrics" id="metrics-area"></div>
+
+      <div class="chart-section" id="chart-section"></div>
+
+      <div class="section-header">
+        <div class="section-title">⚡ Contato Urgente — sem contato há 45+ dias</div>
+        <span class="metric-badge badge-inactive" id="urgentes-count">0</span>
+      </div>
+      <div class="table-wrap" style="margin-bottom: 24px;">
+        <table>
+          <thead><tr>
+            <th>Cliente</th>
+            <th>Classificação</th>
+            <th>Vendedor</th>
+            <th>Último Contato</th>
+            <th>Tempo</th>
+            <th>Perfil</th>
+          </tr></thead>
+          <tbody id="urgentes-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== CLIENTES ========== -->
+    <div class="page" id="page-clientes">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('tab-todos','clientes')">Todos</div>
+        <div class="tab" onclick="switchTab('tab-a','clientes')">Clientes A</div>
+        <div class="tab" onclick="switchTab('tab-b','clientes')">Clientes B</div>
+        <div class="tab" onclick="switchTab('tab-c','clientes')">Clientes C</div>
+        <div class="tab" onclick="switchTab('tab-primeira','clientes')">1ª Compra</div>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" id="search-input" placeholder="🔍  Buscar cliente pelo nome..." oninput="applyFilters()">
+        <span class="filter-label">Vendedor:</span>
+        <select id="filter-vendedor" onchange="applyFilters()">
+          <option value="">Todos</option>
+          <option>RAUL</option>
+          <option>ESTELA</option>
+          <option value="sem">Sem vendedor</option>
+        </select>
+        <span class="filter-label">Tamanho:</span>
+        <select id="filter-tamanho" onchange="applyFilters()">
+          <option value="">Todos</option>
+          <option>PP</option><option>P</option><option>M</option>
+          <option>G</option><option>GG</option><option>G1</option><option>G2</option>
+        </select>
+        <span class="filter-label">Jeans:</span>
+        <select id="filter-jeans" onchange="applyFilters()">
+          <option value="">Todos</option>
+          <option>34</option><option>36</option><option>38</option><option>40</option>
+          <option>42</option><option>44</option><option>46</option><option>48</option><option>50</option>
+        </select>
+        <button class="btn btn-outline btn-sm" onclick="clearFilters()">Limpar</button>
+      </div>
+
+      <div class="table-wrap">
+          <table id="clientes-table">
+            <thead><tr>
+              <th onclick="sortTable('nome')">Cliente <span class="sort-arrow">↕</span></th>
+              <th>Class.</th>
+              <th onclick="sortTable('vendedor')">Vendedor <span class="sort-arrow">↕</span></th>
+              <th>Tam. 1</th>
+              <th>Tam. 2</th>
+              <th>Jeans</th>
+              <th onclick="sortTable('dataAtual')">Últ. Contato <span class="sort-arrow">↕</span></th>
+              <th onclick="sortTable('dataPassada')">Ant. Contato <span class="sort-arrow">↕</span></th>
+              <th>Perfil</th>
+              <th>Ação</th>
+            </tr></thead>
+            <tbody id="clientes-body"></tbody>
+          </table>
+        <div class="pagination" id="pagination-area"></div>
+      </div>
+    </div>
+
+    <!-- ========== SUGESTÕES ========== -->
+    <div class="page" id="page-sugestoes">
+      <div class="sugestoes-grid">
+        <div class="sugestao-card">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <div class="section-title" style="font-size: 14px;">📋 Clientes A — Contatar hoje</div>
+            <span class="metric-badge badge-a" id="sug-a-count">0</span>
+          </div>
+          <div id="sug-a-list"></div>
+        </div>
+        <div class="sugestao-card">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <div class="section-title" style="font-size: 14px;">📋 Clientes B — Contatar hoje</div>
+            <span class="metric-badge badge-b" id="sug-b-count">0</span>
+          </div>
+          <div id="sug-b-list"></div>
+        </div>
+        <div class="sugestao-card">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <div class="section-title" style="font-size: 14px;">🌟 1ª Compra — Follow-up pendente</div>
+            <span class="metric-badge badge-new" id="sug-nova-count">0</span>
+          </div>
+          <div id="sug-nova-list"></div>
+        </div>
+        <div class="sugestao-card">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <div class="section-title" style="font-size: 14px;">⚠️ Em risco de ficar inativas</div>
+            <span class="metric-badge badge-inactive" id="sug-risco-count">0</span>
+          </div>
+          <div id="sug-risco-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== COMPRAS ========== -->
+    <div class="page" id="page-compras">
+      <div class="compra-form">
+        <div class="section-title" style="margin-bottom: 18px; font-size: 15px;">💳 Registrar Nova Compra</div>
+        <div class="form-row" style="margin-bottom: 14px;">
+          <div class="form-group">
+            <label class="form-label">Cliente</label>
+            <select class="form-select" id="compra-cliente">
+              <option value="">Selecionar cliente...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Data da Compra</label>
+            <input type="date" class="form-input" id="compra-data">
+          </div>
+        </div>
+        <div class="form-row" style="margin-bottom: 14px;">
+          <div class="form-group">
+            <label class="form-label">Valor (R$)</label>
+            <input type="number" class="form-input" id="compra-valor" placeholder="0,00" step="0.01" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Vendedor(a)</label>
+            <select class="form-select" id="compra-vendedor">
+              <option>RAUL</option>
+              <option>ESTELA</option>
+              <option>Outro</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label">Observação</label>
+          <input type="text" class="form-input" id="compra-obs" placeholder="Itens comprados, cashback, etc.">
+        </div>
+        <button class="btn btn-primary" onclick="registrarCompra()">Registrar Compra e Atualizar Classificação</button>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">📊 Histórico de Compras</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Cliente</th>
+            <th>Classif. Atual</th>
+            <th>Data</th>
+            <th>Valor</th>
+            <th>Total Compras</th>
+            <th>Frequência</th>
+            <th>Vendedor</th>
+          </tr></thead>
+          <tbody id="compras-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== INATIVAS ========== -->
+    <div class="page" id="page-inativas">
+      <div style="background: var(--red-light); border: 1px solid #ef9a9a; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; font-size: 13px; color: var(--red);">
+        ⚠️ <strong>Clientes Inativas</strong> — Sem compra registrada há 5 meses ou mais. Entre em ação para reativação!
+      </div>
+      <div class="filter-bar">
+        <input type="text" placeholder="🔍  Buscar inativa..." oninput="filterInativas(this.value)">
+        <select id="filter-inativa-vend" onchange="filterInativaVendedor(this.value)">
+          <option value="">Todos vendedores</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Cliente</th>
+            <th>Classif. Anterior</th>
+            <th>Vendedor</th>
+            <th>Último Contato</th>
+            <th>Dias Inativa</th>
+            <th>Tamanho</th>
+            <th>Perfil</th>
+          </tr></thead>
+          <tbody id="inativas-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== ANIVERSÁRIOS ========== -->
+    <div class="page" id="page-aniversarios">
+
+      <div id="aniv-alerts"></div>
+
+      <div class="sugestoes-grid">
+        <div class="sugestao-card" style="grid-column: 1 / -1;">
+          <div class="section-title" style="margin-bottom: 14px; font-size: 15px;">♡ Cadastrar Data de Aniversário</div>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 18px; font-weight:300">Adicione as datas para nunca perder um aniversário especial.</p>
+          <div class="form-row" style="max-width: 500px; margin-bottom: 14px;">
+            <div class="form-group">
+              <label class="form-label">Cliente</label>
+              <select class="form-select" id="aniv-cliente"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Data de Aniversário</label>
+              <input type="date" class="form-input" id="aniv-data">
+            </div>
+          </div>
+          <button class="btn btn-accent btn-sm" onclick="salvarAniversario()">Salvar Aniversário</button>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-top: 8px;">
+        <div class="section-title">🎂 Próximas Aniversariantes — 90 dias</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Cliente</th>
+            <th>Classificação</th>
+            <th>Vendedor</th>
+            <th>Data</th>
+            <th>Dias Restantes</th>
+          </tr></thead>
+          <tbody id="aniv-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== IMPORTAR ========== -->
+    <div class="page" id="page-importar">
+      <div style="background: var(--blush); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 22px; font-size: 13px; color: var(--rose-dark);">
+        <strong>📥 Importação em Massa de Clientes</strong><br>
+        <span style="color:var(--text-muted)">Cole os dados diretamente ou faça upload de um CSV/Excel. Ideal para adicionar as clientes de Primeira Compra de 2025!</span>
+      </div>
+
+      <!-- TABS importação -->
+      <div class="tabs" style="margin-bottom:20px;">
+        <div class="tab active" id="itab-colar" onclick="switchImportTab('colar')">✏️ Colar nomes</div>
+        <div class="tab" id="itab-csv" onclick="switchImportTab('csv')">📄 Upload CSV / Excel</div>
+        <div class="tab" id="itab-manual" onclick="switchImportTab('manual')">+ Uma por vez</div>
+      </div>
+
+      <!-- PANEL: colar nomes -->
+      <div id="ipanel-colar" class="compra-form">
+        <div class="section-title" style="font-size:14px;margin-bottom:14px;">Cole os nomes das clientes — um por linha</div>
+        <div class="form-row" style="margin-bottom:14px;">
+          <div class="form-group">
+            <label class="form-label">Classificação padrão</label>
+            <select class="form-select" id="imp-class">
+              <option value="NOVA">1ª Compra</option>
+              <option value="A">A — VIP</option>
+              <option value="B">B — Regular</option>
+              <option value="C">C — Ocasional</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Vendedor(a) padrão</label>
+            <select class="form-select" id="imp-vendedor">
+              <option>RAUL</option>
+              <option>ESTELA</option>
+              <option value="">Sem vendedor</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nomes (um por linha — pode incluir CPF após o nome, será ignorado)</label>
+          <textarea class="form-textarea" id="imp-nomes" style="min-height:180px;" placeholder="ALICE SAKAMOTO MIRANDA&#10;ANA CAROLINA JUSTO&#10;BEATRIZ FERNANDA CORREIA VERATTI ROCHA&#10;..."></textarea>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="btn btn-primary" onclick="importarNomes()">Importar Clientes</button>
+          <span id="imp-status" style="font-size:13px;color:var(--text-muted)"></span>
+        </div>
+      </div>
+
+      <!-- PANEL: upload CSV -->
+      <div id="ipanel-csv" class="compra-form" style="display:none;">
+        <div class="section-title" style="font-size:14px;margin-bottom:10px;">Upload de arquivo CSV</div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+          O arquivo deve ter colunas com os cabeçalhos abaixo (em qualquer ordem). Colunas não reconhecidas são ignoradas.<br><br>
+          <strong>Colunas aceitas:</strong> <code>nome</code> (obrigatório), <code>classificacao</code>, <code>vendedor</code>, <code>tam1</code>, <code>tam2</code>, <code>jeans</code>, <code>perfil</code>, <code>aniversario</code>
+        </p>
+        <div style="border: 2px dashed var(--border); border-radius: 10px; padding: 32px; text-align:center; margin-bottom:16px; background:var(--cream); cursor:pointer;" onclick="document.getElementById('csv-upload').click()">
+          <div style="font-size:28px;margin-bottom:8px;">📄</div>
+          <div style="font-size:14px;font-weight:500;color:var(--rose-dark)">Clique para selecionar o arquivo</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">CSV, TSV ou Excel (.xlsx)</div>
+          <input type="file" id="csv-upload" accept=".csv,.tsv,.txt,.xlsx" style="display:none" onchange="handleFileUpload(this)">
+        </div>
+        <div id="csv-preview" style="display:none;">
+          <div class="section-title" style="font-size:13px;margin-bottom:10px;">Prévia (primeiras 5 linhas)</div>
+          <div class="table-wrap" style="margin-bottom:14px;">
+            <table><thead id="csv-prev-head"></thead><tbody id="csv-prev-body"></tbody></table>
+          </div>
+          <div class="form-row" style="margin-bottom:14px;max-width:400px;">
+            <div class="form-group">
+              <label class="form-label">Classificação padrão (se coluna ausente)</label>
+              <select class="form-select" id="csv-class-default">
+                <option value="NOVA">1ª Compra</option>
+                <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="confirmarCSV()">Confirmar Importação</button>
+          <span id="csv-status" style="font-size:13px;color:var(--text-muted);margin-left:12px;"></span>
+        </div>
+      </div>
+
+      <!-- PANEL: manual uma por vez -->
+      <div id="ipanel-manual" class="compra-form" style="display:none;">
+        <div class="section-title" style="font-size:14px;margin-bottom:14px;">Adicionar cliente individualmente</div>
+        <div class="form-row" style="margin-bottom:14px;">
+          <div class="form-group">
+            <label class="form-label">Nome *</label>
+            <input class="form-input" id="man-nome" placeholder="Nome completo da cliente">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Classificação</label>
+            <select class="form-select" id="man-class">
+              <option value="NOVA">1ª Compra</option>
+              <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row" style="margin-bottom:14px;">
+          <div class="form-group">
+            <label class="form-label">Vendedor(a)</label>
+            <select class="form-select" id="man-vendedor">
+              <option>RAUL</option><option>ESTELA</option><option value="">—</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tamanho</label>
+            <select class="form-select" id="man-tam">
+              <option value="">—</option>
+              <option>PP</option><option>P</option><option>M</option>
+              <option>G</option><option>GG</option><option>G1</option><option>G2</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">Perfil / Observações</label>
+          <input class="form-input" id="man-perfil" placeholder="Preferências, observações...">
+        </div>
+        <button class="btn btn-primary" onclick="adicionarManual()">Adicionar Cliente</button>
+        <span id="man-status" style="font-size:13px;color:var(--green);margin-left:12px;"></span>
+      </div>
+
+      <!-- Log de importação -->
+      <div id="import-log" style="display:none;">
+        <div class="section-header" style="margin-top:8px;">
+          <div class="section-title">📋 Resultado da Importação</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Nome</th><th>Status</th></tr></thead>
+            <tbody id="import-log-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== VENDEDORES ========== -->
+    <div class="page" id="page-vendedores">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+
+        <div class="sugestao-card">
+          <div class="section-title" style="font-size:15px;margin-bottom:16px">+ Adicionar Vendedor</div>
+          <div class="form-group">
+            <label class="form-label">Nome do vendedor</label>
+            <input class="form-input" id="novo-vendedor" placeholder="Ex: MARIANA" style="text-transform:uppercase"
+              onkeydown="if(event.key==='Enter') adicionarVendedor()">
+          </div>
+          <button class="btn btn-accent" onclick="adicionarVendedor()">Adicionar</button>
+        </div>
+
+        <div class="sugestao-card">
+          <div class="section-title" style="font-size:15px;margin-bottom:16px">Equipe atual</div>
+          <div id="vend-list"></div>
+        </div>
+
+      </div>
+
+      <div style="background:var(--blue-light);border:1px solid #b3d4f5;border-radius:var(--radius);padding:14px 18px;font-size:13px;color:var(--blue);">
+        💡 <strong>Dica:</strong> Ao renomear um vendedor, todos os clientes vinculados a ele são atualizados automaticamente. Ao remover, os clientes ficam sem vendedor atribuído.
+      </div>
+    </div>
+
+    <!-- ========== SCRIPTS ========== -->
+    <div class="page" id="page-scripts">
+      <div class="tabs">
+        <div class="tab active" onclick="switchScriptTab('abc',event)">Clientes A, B e C</div>
+        <div class="tab" onclick="switchScriptTab('nova',event)">1ª Compra</div>
+        <div class="tab" onclick="switchScriptTab('inativa',event)">Reativação</div>
+        <div class="tab" onclick="switchScriptTab('aniv',event)">Aniversário</div>
+      </div>
+
+      <!-- ABC -->
+      <div id="spanel-abc">
+        <div class="scripts-grid">
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">📣 Novidades chegaram</div>
+            <p class="script-intro">Use quando chegar coleção nova ou peças selecionadas para o perfil dela.</p>
+            <div class="script-text" id="sc-abc-1">Oi [NOME]! 🌸 Tô passando rapidinho porque chegaram peças aqui que eu olhei e pensei direto em você. Tem [descrever estilo/cor/peça] que combina muito com o seu estilo. Posso te mandar umas fotos?</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-abc-1')">Copiar script</button>
+          </div>
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">💬 Check-in mensal</div>
+            <p class="script-intro">Contato de relacionamento, sem necessariamente ter novidade específica.</p>
+            <div class="script-text" id="sc-abc-2">Oi [NOME], tudo bem? Já faz um tempinho que a gente não se fala! Tenho algumas peças novas aqui que chegaram e lembrei de você. Quando der uma olhadinha, me chama que te conto as novidades! 💕</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-abc-2')">Copiar script</button>
+          </div>
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">🎯 Produto no perfil dela</div>
+            <p class="script-intro">Quando você encontrar uma peça específica que combina com o perfil registrado.</p>
+            <div class="script-text" id="sc-abc-3">Oi [NOME]! Lembra que você falou que gosta de [preferência registrada]? Chegou exatamente isso aqui! Separei pra você ver antes que acabe. Quer que eu mande foto?</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-abc-3')">Copiar script</button>
+          </div>
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">📦 Pós-compra</div>
+            <p class="script-intro">Enviar 2 a 3 dias após uma compra para fortalecer o vínculo.</p>
+            <div class="script-text" id="sc-abc-4">Oi [NOME]! Passando para saber se as peças chegaram direitinho e se você tá amando elas! Qualquer dúvida sobre como combinar, me chama que adoro ajudar. 🌸</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-abc-4')">Copiar script</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOVA -->
+      <div id="spanel-nova" style="display:none">
+        <div class="scripts-grid">
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">👋 Boas-vindas após 1ª compra</div>
+            <p class="script-intro">Enviar em até 48h após a primeira compra.</p>
+            <div class="script-text" id="sc-nova-1">Oi [NOME]! Que alegria ter você aqui na Moderia! 🌸 Foi um prazer te atender. Qualquer dúvida sobre as peças ou se quiser ver lançamentos novos, me chama aqui. Vou te mantendo por dentro das novidades, tá? 💕</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-nova-1')">Copiar script</button>
+          </div>
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">🔁 Follow-up 15 dias</div>
+            <p class="script-intro">Segundo contato, cerca de 15 dias após a primeira compra.</p>
+            <div class="script-text" id="sc-nova-2">Oi [NOME]! Passando para saber se você curtiu as peças que levou! 😊 Chegaram novidades incríveis aqui que acho que têm tudo a ver com você. Quer que eu mande foto de algumas?</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-nova-2')">Copiar script</button>
+          </div>
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">💛 Convite para voltar</div>
+            <p class="script-intro">Terceiro contato, por volta de 30 dias. Objetivo: trazer ela de volta à loja.</p>
+            <div class="script-text" id="sc-nova-3">Oi [NOME]! A gente tá com peças lindas aqui que chegaram esses dias. Sinto que você vai amar! Quando puder dar uma passadinha, vai valer a pena. Te espero com um cafezinho 😄☕</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-nova-3')">Copiar script</button>
+          </div>
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">📋 Coleta de perfil</div>
+            <p class="script-intro">Para conhecer melhor a nova cliente e registrar no perfil dela.</p>
+            <div class="script-text" id="sc-nova-4">Oi [NOME]! Pra eu te chamar sempre que chegar algo que combina com você, me conta: você prefere mais peças soltas ou estruturadas? Tem alguma cor ou estilo que não usa? Assim fico de olho nas peças certas pra te mostrar! 🌸</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-nova-4')">Copiar script</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- INATIVA -->
+      <div id="spanel-inativa" style="display:none">
+        <div class="scripts-grid">
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">💌 Reativação suave</div>
+            <p class="script-intro">Primeira tentativa de recontato. Tom leve, sem pressão.</p>
+            <div class="script-text" id="sc-in-1">Oi [NOME]! Sumida! 😊 Tô com saudade de te ver por aqui. Chegaram peças incríveis esses dias e fiquei pensando em você. Posso te mandar umas fotos?</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-in-1')">Copiar script</button>
+          </div>
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">🎁 Reativação com oferta</div>
+            <p class="script-intro">Segunda tentativa, com algum diferencial para incentivar o retorno.</p>
+            <div class="script-text" id="sc-in-2">Oi [NOME]! Já faz um tempo que não nos falamos e queria te dar uma novidade boa: tô com peças separadas aqui que têm tudo a ver com você. Que tal dar uma passadinha? Posso separar algumas pra você experimentar com calma. 💕</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-in-2')">Copiar script</button>
+          </div>
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">📸 Reativação com foto</div>
+            <p class="script-intro">Enviar junto com uma foto de produto que combine com o perfil dela.</p>
+            <div class="script-text" id="sc-in-3">Oi [NOME]! Olha o que chegou aqui! 😍 Lembrei direto de você quando vi. O que acha? [enviar foto da peça]</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-in-3')">Copiar script</button>
+          </div>
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">🤍 Último contato</div>
+            <p class="script-intro">Tentativa final antes de mover para lista de inativas.</p>
+            <div class="script-text" id="sc-in-4">Oi [NOME], tudo bem com você? Fiz questão de passar aqui pra te dizer que sinto sua falta na Moderia! Quando quiser renovar o guarda-roupa, estarei aqui. Nos vemos em breve? 🌸</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-in-4')">Copiar script</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANIVERSÁRIO -->
+      <div id="spanel-aniv" style="display:none">
+        <div class="scripts-grid">
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">🎂 Felicitação no dia</div>
+            <p class="script-intro">Enviar no próprio dia do aniversário.</p>
+            <div class="script-text" id="sc-aniv-1">Oi [NOME]! Feliz aniversário! 🎉🌸 Que esse novo ciclo seja repleto de coisas lindas — assim como você! Vai ter um mimo especial te esperando aqui na Moderia quando vier nos visitar. Beijo grande! 💕</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-aniv-1')">Copiar script</button>
+          </div>
+          <div class="sugestao-card">
+            <div class="section-title" style="font-size:14px;margin-bottom:10px">🎀 Pré-aniversário (3 dias antes)</div>
+            <p class="script-intro">Enviar alguns dias antes para criar expectativa e convidá-la à loja.</p>
+            <div class="script-text" id="sc-aniv-2">Oi [NOME]! Seu aniversário tá chegando e aqui na Moderia a gente quer fazer parte da comemoração! 🎂 Que tal passar por aqui antes do seu dia especial para escolher algo lindo para celebrar? Te espero! 🌸</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="copyScript('sc-aniv-2')">Copiar script</button>
+          </div>
+        </div>
+      </div>
+    </div><!-- fim page-scripts -->
+
+  </div><!-- content -->
+</div><!-- main -->
+
+<div class="modal-overlay" id="modal-cliente">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-titulo">Nova Cliente</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id">
+      <div class="form-row" style="margin-bottom: 14px;">
+        <div class="form-group">
+          <label class="form-label">Nome completo *</label>
+          <input class="form-input" id="f-nome" placeholder="Nome da cliente">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Classificação</label>
+          <select class="form-select" id="f-class">
+            <option value="A">A — VIP</option>
+            <option value="B">B — Regular</option>
+            <option value="C">C — Ocasional</option>
+            <option value="NOVA">1ª Compra</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom: 14px;">
+        <div class="form-group">
+          <label class="form-label">Vendedor(a)</label>
+          <select class="form-select" id="f-vendedor">
+            <option>RAUL</option>
+            <option>ESTELA</option>
+            <option value="">Sem vendedor</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Data de Aniversário</label>
+          <input type="date" class="form-input" id="f-aniversario">
+        </div>
+      </div>
+      <div class="form-row-3" style="margin-bottom: 14px;">
+        <div class="form-group">
+          <label class="form-label">Tamanho Principal</label>
+          <select class="form-select" id="f-tam1">
+            <option value="">—</option>
+            <option>PP</option><option>P</option><option>M</option>
+            <option>G</option><option>GG</option><option>G1</option><option>G2</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tamanho 2</label>
+          <select class="form-select" id="f-tam2">
+            <option value="">—</option>
+            <option>PP</option><option>P</option><option>M</option>
+            <option>G</option><option>GG</option><option>G1</option><option>G2</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jeans</label>
+          <select class="form-select" id="f-jeans">
+            <option value="">—</option>
+            <option>34</option><option>36</option><option>38</option><option>40</option>
+            <option>42</option><option>44</option><option>46</option><option>48</option><option>50</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom: 14px;">
+        <div class="form-group">
+          <label class="form-label">Último Contato</label>
+          <input type="date" class="form-input" id="f-data1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contato Anterior</label>
+          <input type="date" class="form-input" id="f-data2">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Perfil da cliente (preferências, o que não gosta, idade, etc.)</label>
+        <textarea class="form-textarea" id="f-perfil" placeholder="Ex: Gosta de peças fluidas e longas, evita decotes, prefere neutros. 45 anos, executiva. Não usa amarelo..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" id="btn-excluir" style="display:none;color:var(--red);border-color:var(--red);margin-right:auto;">🗑 Excluir</button>
+      <button class="btn btn-outline btn-sm" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-accent" onclick="saveCliente()">Salvar Alterações</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+// Excel serial dates to JS Date conversion
+function excelDateToJS(serial) {
+  if (!serial || isNaN(serial)) return null;
+  const d = new Date((serial - 25569) * 86400 * 1000);
+  return d;
+}
+
+function excelDateToStr(serial) {
+  const d = excelDateToJS(serial);
+  if (!d) return '';
+  return d.toLocaleDateString('pt-BR');
+}
+
+function daysSince(serial) {
+  const d = excelDateToJS(serial);
+  if (!d) return null;
+  const now = new Date();
+  return Math.floor((now - d) / (1000 * 60 * 60 * 24));
+}
+
+// ===================== GOOGLE SHEETS CONFIG =====================
+const GS_API_KEY   = 'AIzaSyCYPWfwSVYmPjA9KEie2b2XGfT4f8Z0m94';
+const GS_SHEET_ID  = '1RzjuDsq2ulpcuImcee5naJBm1VqZWEv8Jk7qNPLeFw4';
+const GS_BASE      = `https://sheets.googleapis.com/v4/spreadsheets/${GS_SHEET_ID}`;
+const GS_BASE_UPD  = `https://sheets.googleapis.com/v4/spreadsheets/${GS_SHEET_ID}`;
+window.GS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxYQa6tlvXz3UHFUQy9MN9qvknwUtgDwrtKd2cxFBR19pnBQORMy6cwKKrjeDed6RJPbQ/exec';
+
+// Abas usadas na planilha
+const ABA_CLIENTES  = 'Clientes';
+const ABA_COMPRAS   = 'Compras';
+const ABA_VENDEDORES= 'Vendedores';
+
+let syncStatus = 'local'; // 'local' | 'syncing' | 'ok' | 'error'
+
+function setSyncStatus(s, msg) {
+  syncStatus = s;
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  const icons = { local:'💾', syncing:'⏳', ok:'☁️', error:'⚠️' };
+  const colors = { local:'var(--text-muted)', syncing:'var(--amber)', ok:'var(--green)', error:'var(--red)' };
+  el.textContent = icons[s] + ' ' + (msg || {local:'Local',syncing:'Salvando...',ok:'Nuvem OK',error:'Erro ao salvar'}[s]);
+  el.style.color = colors[s];
+}
+
+// ── Cabeçalhos das abas ──
+const HDR_CLIENTES  = ['id','nome','classificacao','vendedor','tam1','tam2','jeans','dataAtual','dataPassada','perfil','aniversario','totalCompras','frequencia'];
+const HDR_COMPRAS   = ['clienteId','clienteNome','data','valor','obs','vendedor','classificacao'];
+const HDR_VENDEDORES= ['nome'];
+
+// ── Ler aba ──
+async function gsRead(aba) {
+  const url = `${GS_BASE}/values/${encodeURIComponent(aba)}?key=${GS_API_KEY}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`Erro ao ler ${aba}: ${r.status}`);
+  const data = await r.json();
+  return data.values || [];
+}
+
+// ── Escrever aba inteira (clear + update) ──
+async function gsWrite(aba, rows) {
+  // Usar append via fetch com API key não permite escrita — precisa de OAuth.
+  // Usamos a abordagem de Apps Script Web App como proxy.
+  // Por ora, salvamos local e marcamos como pendente.
+  localStorage.setItem('crm_pending_sync', 'true');
+  setSyncStatus('error', 'Configure o Apps Script (ver instruções)');
+}
+
+// ── Converter linha → objeto cliente ──
+function rowToCliente(row, hdrs) {
+  const obj = {};
+  hdrs.forEach((h, i) => obj[h] = row[i] || '');
+  return {
+    id:           parseInt(obj.id) || 0,
+    nome:         obj.nome,
+    classificacao:obj.classificacao || 'C',
+    vendedor:     obj.vendedor,
+    tam1:         obj.tam1,
+    tam2:         obj.tam2,
+    jeans:        obj.jeans,
+    dataAtual:    obj.dataAtual ? parseFloat(obj.dataAtual) : null,
+    dataPassada:  obj.dataPassada ? parseFloat(obj.dataPassada) : null,
+    perfil:       obj.perfil,
+    aniversario:  obj.aniversario,
+    totalCompras: parseFloat(obj.totalCompras) || 0,
+    frequencia:   parseInt(obj.frequencia) || 0,
+    compras:      [],
+  };
+}
+
+// ── Converter objeto cliente → linha ──
+function clienteToRow(c) {
+  return HDR_CLIENTES.map(h => {
+    const v = c[h];
+    return v === null || v === undefined ? '' : String(v);
+  });
+}
+
+// ── Carregar do Sheets ──
+async function loadFromSheets() {
+  setSyncStatus('syncing', 'Carregando...');
+  try {
+    const rows = await gsRead(ABA_CLIENTES);
+    if (rows.length < 2) {
+      // Planilha vazia — inicializa com dados locais e faz upload
+      setSyncStatus('local', 'Planilha vazia — dados locais');
+      return null;
+    }
+    const hdrs = rows[0];
+    const lista = rows.slice(1).map(r => rowToCliente(r, hdrs)).filter(c => c.nome);
+    setSyncStatus('ok', 'Nuvem OK');
+    return lista;
+  } catch(e) {
+    console.error('Sheets load error:', e);
+    setSyncStatus('error', 'Offline — usando local');
+    return null;
+  }
+}
+
+// ── Salvar no Sheets via Apps Script ──
+async function saveToSheets() {
+  if (!window.GS_WEBAPP_URL) {
+    saveLocal();
+    setSyncStatus('local', 'Salvo local');
+    return;
+  }
+  setSyncStatus('syncing', 'Salvando...');
+  try {
+    const payload = {
+      clientes: clientes.map(clienteToRow),
+      compras,
+      vendedores,
+      headers_clientes: HDR_CLIENTES,
+      headers_compras:  HDR_COMPRAS,
+    };
+    // mode no-cors: não conseguimos ler a resposta mas o Apps Script recebe e salva
+    await fetch(window.GS_WEBAPP_URL, {
+      method:  'POST',
+      mode:    'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body:    JSON.stringify(payload),
+    });
+    setSyncStatus('ok', 'Nuvem OK');
+  } catch(e) {
+    saveLocal();
+    setSyncStatus('error', 'Erro — salvo local');
+    console.error('Sheets save error:', e);
+  }
+}
+
+// ── Fallback local ──
+function saveLocal() {
+  localStorage.setItem('crm_clientes_v2', JSON.stringify(clientes));
+  localStorage.setItem('crm_compras_v2', JSON.stringify(compras));
+}
+
+// Load from localStorage or seed from spreadsheet data
+function loadData() {
+  const stored = localStorage.getItem('crm_clientes_v2');
+  if (stored) return JSON.parse(stored);
+  return seedData();
+}
+
+function saveData() {
+  saveLocal();
+  saveToSheets();
+}
+
+function seedData() {
+  // Data seeded from the uploaded spreadsheet
+  const rawA = [
+    {n:"SUZANE TALITA TREFILHO",v:"RAUL",t1:"M",t2:"",j:"42",da:null,dp:"PAGAR",s:""},
+    {n:"MARCIA MARIA DA SILVA RAMAZZINI",v:"RAUL",t1:"M",t2:"",j:"40",da:null,dp:"PAGAR",s:""},
+    {n:"MAYARA CAROLINE DE FARIAS",v:"RAUL",t1:"GG",t2:"",j:"44",da:null,dp:"PAGAR",s:""},
+    {n:"SILVANA ANGELO (MÃE DA MAYARA CAROLINE)",v:"RAUL",t1:"GG",t2:"",j:"44",da:null,dp:"PAGAR",s:"MULHER 50+"},
+    {n:"ALINE EMANUELLE PERIM",v:"ESTELA",t1:"G",t2:"",j:"40",da:46121,dp:46105,s:""},
+    {n:"MARIA GERSONI VALÉRIO DRAGO",v:"RAUL",t1:"G1",t2:"",j:"46",da:null,dp:"PAGAR",s:"GOSTA DE LONGOS, CALÇAS, MACACÕES, PEÇAS FLUIDAS"},
+    {n:"ALESSA MARIA MILANEZ",v:"RAUL",t1:"G",t2:"",j:"42",da:46132,dp:46105,s:""},
+    {n:"VALÉRIA DA SILVA DUTRA STÁBILE",v:"RAUL",t1:"G",t2:"",j:"40",da:46129,dp:46105,s:"MAIS FINA EMBAIXO"},
+    {n:"BIANCA FERRAZ",v:"RAUL",t1:"G",t2:"",j:"40",da:46132,dp:46104,s:""},
+    {n:"MAYARA MONTESINO",v:"RAUL",t1:"G1",t2:"",j:"46",da:null,dp:"PAGAR",s:""},
+    {n:"KARINA DE OLIVEIRA SILVA",v:"RAUL",t1:"G",t2:"",j:"38",da:46129,dp:46105,s:""},
+    {n:"ELAINE APARECIDA AMBRÓSIO PEREIRA",v:"RAUL",t1:"G",t2:"",j:"",da:46123,dp:46105,s:"MULHER 50+"},
+    {n:"MAYARA MILANI",v:"ESTELA",t1:"G",t2:"",j:"42",da:46132,dp:46105,s:""},
+    {n:"LUCILENE SANTOS DE OLIVEIRA",v:"RAUL",t1:"G",t2:"44",j:"44",da:46132,dp:46105,s:""},
+    {n:"CARLA FERNANDA TORINI",v:"RAUL",t1:"G",t2:"",j:"44",da:46121,dp:46105,s:""},
+    {n:"INGRID LACERDA",v:"RAUL",t1:"G",t2:"",j:"42",da:46126,dp:46104,s:""},
+    {n:"APARECIDA DE LIMA",v:"ESTELA",t1:"G",t2:"",j:"42",da:null,dp:46101,s:"GOSTA DE ROUPAS MAIS JUSTINHAS"},
+    {n:"LETICIA FERRAZ",v:"ESTELA",t1:"G",t2:"",j:"46",da:null,dp:46101,s:""},
+    {n:"AMANDA MARQUES DE OLIVEIRA",v:"RAUL",t1:"G",t2:"",j:"40",da:null,dp:46101,s:"GOSTA DE PEÇAS MAIS JUSTAS EM CIMA, ESTRUTURADAS EM GERAL"},
+    {n:"NATÁLIA TAMIRES DE ABREU HIDALGO",v:"RAUL",t1:"G",t2:"",j:"40",da:null,dp:46101,s:""},
+    {n:"ELISABETE APARECIDA MUSSI",v:"RAUL",t1:"G",t2:"",j:"40",da:null,dp:46101,s:""},
+    {n:"RENATA DE OLIVEIRA SILVA",v:"ESTELA",t1:"G",t2:"",j:"42",da:null,dp:46101,s:""},
+    {n:"CAMILA PEROBELLI DE CAMPOS",v:"RAUL",t1:"G",t2:"",j:"46",da:null,dp:46101,s:"BEM MAIS FINA EM CIMA, SÓ USA PEÇAS JUSTAS EM CIMA"},
+    {n:"RACHEL PIRES DE MORAES",v:"RAUL",t1:"G",t2:"",j:"42",da:null,dp:46101,s:""},
+    {n:"VANESSA APARECIDA DIORGI",v:"RAUL",t1:"GG",t2:"",j:"42",da:46129,dp:46105,s:"SÓ USA MANGAS ODEIA AMARELO"},
+    {n:"FRANCISLAINE DOS SANTOS",v:"RAUL",t1:"GG",t2:"",j:"42",da:46129,dp:46105,s:""},
+    {n:"LARA VIEIRA DE MELO",v:"ESTELA",t1:"GG",t2:"",j:"44",da:46132,dp:46105,s:""},
+    {n:"DENISE SILVEIRA CABRAL",v:"RAUL",t1:"GG",t2:"46",j:"46",da:46132,dp:46105,s:""},
+    {n:"LARISSA APARECIDA GRANADO",v:"RAUL",t1:"GG",t2:"",j:"46",da:46132,dp:46105,s:""},
+    {n:"LETICIA VIEIRA NASCIMENTO RUFFO",v:"RAUL",t1:"GG",t2:"G",j:"42",da:46132,dp:46105,s:""},
+    {n:"GABRIELA CAROLINE BALTAZAR DA SILVA",v:"ESTELA",t1:"GG",t2:"",j:"46",da:46132,dp:46105,s:""},
+    {n:"MARIA EDUARDA CAMARGO",v:"RAUL",t1:"GG",t2:"",j:"46",da:46132,dp:46105,s:""},
+    {n:"MARCIA CRISTINA RICCI RUIZ",v:"RAUL",t1:"GG",t2:"",j:"46",da:46132,dp:46105,s:""},
+    {n:"FABIANA FERREIRA MARTINS",v:"RAUL",t1:"GG",t2:"",j:"44",da:46132,dp:46104,s:""},
+    {n:"RAQUEL CRISTIANINI",v:"RAUL",t1:"GG",t2:"",j:"46",da:null,dp:46101,s:"50 ANOS, MULHER, AMA COISAS LONGAS E CONJUNTOS"},
+    {n:"SUELEN MILANEZ",v:"RAUL",t1:"M",t2:"",j:"40",da:46129,dp:46105,s:"MENOR EM CIMA"},
+    {n:"MONIQUE GABIRA DE OLIVEIRA",v:"RAUL",t1:"M",t2:"",j:"42",da:46132,dp:46105,s:"MAIS FINA EM CIMA"},
+    {n:"BIANCA SABIO",v:"RAUL",t1:"M",t2:"",j:"40",da:46129,dp:46105,s:""},
+    {n:"PATRICIA FERNANDA ALVES",v:"RAUL",t1:"M",t2:"",j:"42",da:46132,dp:46105,s:"MULHER, NÃO USA NADA CURTO NEM MUITO AGARRADO MAS GOSTA ESTRUTURADO"},
+    {n:"MILENA SANCHEZ DUTRA",v:"RAUL",t1:"M",t2:"",j:"38",da:46129,dp:46105,s:""},
+    {n:"ROSENEI APARECIDA ELEUTÉRIO",v:"RAUL",t1:"M",t2:"",j:"40",da:46132,dp:46105,s:""},
+    {n:"NATÁLIA CUNHA",v:"RAUL",t1:"M",t2:"",j:"40",da:46132,dp:46105,s:""},
+    {n:"ADRIANA FERNANDES PEREZ",v:"ESTELA",t1:"M",t2:"",j:"40",da:46132,dp:46105,s:""},
+    {n:"DANIELA SCALCO",v:"RAUL",t1:"M",t2:"",j:"38",da:46132,dp:46104,s:""},
+    {n:"GABRIELA RODRIGUES MACHADO BORJA",v:"ESTELA",t1:"P",t2:"",j:"38",da:null,dp:"PÓS PARTO",s:""},
+    {n:"RITA CASSARO",v:"ESTELA",t1:"M",t2:"",j:"42",da:46129,dp:46101,s:""},
+    {n:"JULIANA PLACIDO SALCEDO",v:"ESTELA",t1:"M",t2:"",j:"42",da:46119,dp:46101,s:""},
+    {n:"GABRIELA SANTANA DE FREITAS NASCIMBENI",v:"RAUL",t1:"M",t2:"",j:"40",da:46126,dp:46101,s:""},
+    {n:"KIKA DUARTE",v:"RAUL",t1:"M",t2:"",j:"38",da:46130,dp:46101,s:""},
+    {n:"GABRIELA PERIM",v:"ESTELA",t1:"M",t2:"",j:"40",da:46132,dp:46101,s:""},
+    {n:"JESSICA RENATA DE BRITTO",v:"RAUL",t1:"M",t2:"",j:"40",da:46132,dp:46101,s:""},
+    {n:"MARINA CECILIA KILL",v:"RAUL",t1:"M",t2:"",j:"38",da:46132,dp:46096,s:""},
+    {n:"ANDRESSA DE SOUZA",v:"RAUL",t1:"M",t2:"",j:"40",da:46113,dp:46096,s:""},
+    {n:"RAPHAELA BARBIERI",v:"RAUL",t1:"M",t2:"",j:"",da:46137,dp:46096,s:""},
+    {n:"GLEICE KELLY",v:"RAUL",t1:"M",t2:"",j:"40",da:46137,dp:46096,s:""},
+    {n:"ANA CAMILA DOMENICONI NEVES",v:"RAUL",t1:"M",t2:"",j:"40",da:46137,dp:46096,s:""},
+    {n:"ANGELICA BONATO",v:"RAUL",t1:"M",t2:"",j:"40",da:46137,dp:46096,s:""},
+    {n:"ANA CAROLINA VIDAL DE CASTRO",v:"RAUL",t1:"G1",t2:"",j:"48",da:46137,dp:46101,s:""},
+    {n:"LAISA FRANCINE GONZALES DOS SANTOS",v:"RAUL",t1:"P",t2:"",j:"38",da:null,dp:46101,s:"PEÇAS DIFERENTES, LANÇAMENTOS"},
+    {n:"SANDRA RUFFO",v:"RAUL",t1:"P",t2:"",j:"38",da:null,dp:46101,s:""},
+    {n:"LETICIA SONA",v:"RAUL",t1:"P",t2:"",j:"38",da:null,dp:46101,s:"AMA CALÇAS JEANS"},
+    {n:"MICHELLE ROSANE SILVESTRA PÁTARO",v:"RAUL",t1:"P",t2:"",j:"38",da:null,dp:46101,s:""},
+    {n:"NICOLLY RAZUK",v:"RAUL",t1:"P",t2:"",j:"38",da:46112,dp:46096,s:""},
+    {n:"AMANDA SOUZA BUENO",v:"RAUL",t1:"P",t2:"",j:"36",da:46113,dp:46096,s:""},
+    {n:"JULIANA VALENZOLA",v:"RAUL",t1:"P",t2:"",j:"38",da:46113,dp:46096,s:""},
+    {n:"ANA CAROLINA SÁVIO",v:"ESTELA",t1:"P",t2:"M",j:"38",da:null,dp:46096,s:""},
+    {n:"GABRIELE ARAUJO ALVES",v:"RAUL",t1:"PP",t2:"P",j:"36",da:null,dp:46105,s:""},
+    {n:"JOYCE PALU",v:"RAUL",t1:"PP",t2:"",j:"36",da:null,dp:46104,s:""},
+    {n:"CLAUDIA TONON",v:"ESTELA",t1:"PP",t2:"",j:"36",da:null,dp:46101,s:""},
+    {n:"ROSEMEIRE LAVELLI RUIZ",v:"RAUL",t1:"PP",t2:"",j:"36",da:null,dp:46101,s:""},
+    {n:"LARISSA ANDRADE",v:"RAUL",t1:"PP",t2:"",j:"36",da:null,dp:46101,s:"GOSTA DE COISAS LONGAS, MACACÕES E CALÇAS"},
+    {n:"MAÍARA DAIANE DE OLIVEIRA",v:"RAUL",t1:"M",t2:"",j:"",da:46123,dp:46105,s:""},
+  ];
+
+  const rawB = [
+    {n:"INGRID THAYREE SOUZA DE FARIAS COSTA",v:"RAUL",t1:"M",t2:"",j:"",da:46105,dp:null,s:""},
+    {n:"NAÍARA AMBROSIO",v:"RAUL",t1:"G",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"MARCELA CHRISTIANINI DE OLIVEIRA",v:"RAUL",t1:"M",t2:"",j:"42",da:null,dp:null,s:""},
+    {n:"RITA SABIO",v:"RAUL",t1:"GG",t2:"G",j:"",da:null,dp:null,s:""},
+    {n:"FRANCINE CASSARO",v:"RAUL",t1:"M",t2:"",j:"",da:46082,dp:null,s:""},
+    {n:"FLAVIA MOMESSO",v:"RAUL",t1:"P",t2:"PP",j:"",da:46104,dp:null,s:""},
+    {n:"MARA TREFILHO",v:"RAUL",t1:"GG",t2:"G",j:"44",da:null,dp:null,s:""},
+    {n:"MAÍRA DEL BIANCO",v:"RAUL",t1:"G1",t2:"",j:"48",da:null,dp:null,s:""},
+    {n:"ALESSANDRA ROMAO",v:"RAUL",t1:"M",t2:"",j:"40",da:46113,dp:null,s:""},
+    {n:"JADE CONTI MILANEZ",v:"RAUL",t1:"GG",t2:"",j:"46",da:null,dp:null,s:""},
+    {n:"SILVIA SALETE CIOLA",v:"RAUL",t1:"G",t2:"",j:"42",da:46113,dp:null,s:""},
+    {n:"GABRIELE GOMES",v:"RAUL",t1:"P",t2:"",j:"38",da:46101,dp:null,s:""},
+    {n:"TAISA RIZZATO ROZIN",v:"RAUL",t1:"P",t2:"",j:"36",da:46113,dp:null,s:""},
+    {n:"GLAUCIA MASSON",v:"RAUL",t1:"G",t2:"M",j:"42",da:46113,dp:null,s:""},
+    {n:"CARLA FERNANDA TORINI",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"BEATRIZ SUSIGAN CORREIA",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"MARIANE PEREIRA DE MEDEIRO MAGALHÃES",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"FRANCINE PONTES PESSUTO",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"SUELI PEROBELLI",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"SABRINA RUFINO MORENO",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"MARIA FERNANDA POLLINI",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"VANESSA FORMIGÃO GOMES",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"NADIA GABRIELA GIMENEZ PEREIRA",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"JESSICA FERNANDA DOS SANTOS MOYA",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"NATALIA BORTOLUCCI",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"JULIANA GATTO",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"JOSIELI CARVALHO",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"LETICIA BACCARO MICHELLIN",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"BEATRIZ MACACARI",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"NAYLA GREICE SOARES DE MATOS",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"AMANDA CRISTINA JOBSTRAIBIZER PAIVA",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"LUCIANA CRISTINA DA SILVA",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"TALITA DE FATIMA PINTO",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"ANDRÉIA CRISTINA DE SOUZA SCORTELO",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"ANGELICA NATALIA ROSSI LONGATO",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"CINTHIA ANDOLFATO CAVASSANI",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"MONICA DINIZ",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"MARCIA APARECIDA CAPONE GIMENES",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"KELLY FABIANA GALLES RODRIGUES",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"KATIA CHIODE DE LUCA RAMOS",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"MANUELA SANTOS",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"JENNIFER DAMASCENO",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"PRISCILA SANCHEZ",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"LUANA ALVES BARBOSA",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"ROSANGELA USTULIN TELTO",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"FABIANA RODRIGUES CARFE",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"MARINA CORREA MARTINS",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"DAIANA RAQUEL ROMERO BARROS",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"FLAVIA PRIORI ALCALDE",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+    {n:"RAFAELA TOCHETTI",v:"RAUL",t1:"",t2:"",j:"",da:null,dp:null,s:""},
+  ];
+
+  const rawC = [
+    {n:"GABRIELLE ALCANTARA SPIRITO",v:"",t1:"",t2:"",j:"",da:46113,dp:null,s:""},
+    {n:"JESSICA FADONI",v:"",t1:"",t2:"",j:"",da:46113,dp:null,s:""},
+    {n:"KEILA PATRICIA NETO",v:"",t1:"",t2:"",j:"",da:46113,dp:null,s:""},
+    {n:"NATALIA MARCHI SPOLDARIO",v:"",t1:"",t2:"",j:"",da:46109,dp:null,s:""},
+    {n:"RAFAELA HERNANDEZ",v:"",t1:"",t2:"",j:"",da:46113,dp:null,s:""},
+    {n:"FABIANA DA SILVA OLIVEIRA",v:"",t1:"",t2:"",j:"",da:46113,dp:null,s:""},
+    {n:"MARIANA CARVALHO DA SILVA",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"MARTA BERRO FIORELLI",v:"",t1:"",t2:"",j:"",da:46109,dp:null,s:""},
+    {n:"MARIA CRISTINA FANTUCCI",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"ROSELI APARECIDA DE ORTEGA",v:"",t1:"",t2:"",j:"",da:46113,dp:null,s:""},
+    {n:"CAMILLE SCHIAVON CIPOLA",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"MARIANE MENGON COUTINHO",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"TATIANE NEVES",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"TATIANE MILANE",v:"",t1:"",t2:"",j:"",da:46123,dp:null,s:""},
+    {n:"TATIANA POSSEBON",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"ANA LAURA AVELINO",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"SIMONE APARECIDA MARTINELLO",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"BEATRIZ BASSOTO",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"BRUNA PALMA ROSSINI GRILLO",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"PRISCILA CONDE",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"GABRIELA ORMELESE DE MELLO",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"SILMARA CECILIA BRANCAGLION",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"REGIANE CASTANHACI",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"ELIANE MARTINEZ MURAROTO",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"BRUNA ROBERTA CRESPILHO",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"KARINA APARECIDA BORGES",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"VERA HELENA DA SILVA RODRIGUES",v:"",t1:"",t2:"",j:"",da:46126,dp:null,s:""},
+    {n:"IVANA GARBIN MILANI",v:"",t1:"",t2:"",j:"",da:46137,dp:null,s:""},
+  ];
+
+  const rawNova = [
+    "ALICE SAKAMOTO MIRANDA","ANA CAROLINA JUSTO","BEATRIZ FERNANDA CORREIA VERATTI ROCHA",
+    "CAMILA SANTORO DE MORAES","CAROLINE CERINI OMETTO GRANNA","CLAUDIA MARIA DE OLIVEIRA LIMA",
+    "CRISTIANE MARIA DA SILVA","DANIELA MATIELO GUERMANDI","FERNANDA CRISTINA LORENZETTI",
+    "FERNANDA GIL MARTINS","JOYCE PALU","JULIANA DUTRA STABILE","LUANA MAGRINI CALCIOLARI",
+    "LUMA PARDO GOMES","MARCIA CRISTINA RICCI RUIZ","MAYARA MARIANO DOS SANTOS",
+    "MONICA TONON DANIELETTO","NAÍARA AMBRÓSIO","NATALIA IRIS DE CAMPOS ALONSO","SABRINA CAPUTTI COELHO",
+    "ADRIANA GIRALDI","ADRIANE LEMOS PRADO","AMANDA MARTINS CAPEPERUCHE","ANA CAROLINA DA SILVA OPRINI",
+    "BIANCA GAIOTO","CAROLINE ARANDA GARCIA","DANIELA FERNANDA DE ANTONIO","FABIANA FABRI",
+    "FABIANA MAZAROTO NUNES","FRANCINE PONTES PESSUTO","JADE SARAH PICCOLO BARONI",
+    "KELLY FABIANA GALLES RODRIGUES","LAIS FERNANDA GARCIA","LORENA RIBEIRO","LUCIANA FIDELIS",
+    "MARIA AMELIA GASPAROTO","MARIA BERNADETE BALESTIERI","MARIA FERNANDA POLLINI",
+    "MARIANA CONTADOR LEAL","MARIANE PEREIRA DE MEDEIRO MAGALHÃES","PATRICIA VECCHIO","ROSANA HERRERA FURLANETO RUIZ",
+    "TALITA DE FATIMA PINTO","TATIANA POSSEBON"
+  ];
+
+  let list = [];
+  let id = 1;
+
+  rawA.forEach(r => {
+    list.push({
+      id: id++, nome: r.n, classificacao: 'A', vendedor: r.v,
+      tam1: r.t1, tam2: r.t2, jeans: r.j,
+      dataAtual: r.da, dataPassada: typeof r.dp === 'number' ? r.dp : null,
+      perfil: r.s, aniversario: '', compras: [], totalCompras: 0, frequencia: 0
+    });
+  });
+
+  rawB.forEach(r => {
+    list.push({
+      id: id++, nome: r.n, classificacao: 'B', vendedor: r.v,
+      tam1: r.t1, tam2: r.t2, jeans: r.j,
+      dataAtual: r.da, dataPassada: r.dp,
+      perfil: r.s, aniversario: '', compras: [], totalCompras: 0, frequencia: 0
+    });
+  });
+
+  rawC.forEach(r => {
+    list.push({
+      id: id++, nome: r.n, classificacao: 'C', vendedor: r.v,
+      tam1: r.t1, tam2: r.t2, jeans: r.j,
+      dataAtual: r.da, dataPassada: r.dp,
+      perfil: r.s, aniversario: '', compras: [], totalCompras: 0, frequencia: 0
+    });
+  });
+
+  rawNova.forEach(nome => {
+    list.push({
+      id: id++, nome: nome, classificacao: 'NOVA', vendedor: 'RAUL',
+      tam1: '', tam2: '', jeans: '',
+      dataAtual: 46105, dataPassada: null,
+      perfil: '', aniversario: '', compras: [], totalCompras: 0, frequencia: 0
+    });
+  });
+
+  localStorage.setItem('crm_clientes_v2', JSON.stringify(list));
+  return list;
+}
+
+let clientes = loadData();
+let compras = JSON.parse(localStorage.getItem('crm_compras_v2') || '[]');
+
+// ===================== VENDEDORES =====================
+function loadVendedores() {
+  const stored = localStorage.getItem('crm_vendedores_v1');
+  if (stored) return JSON.parse(stored);
+  const defaults = ['RAUL', 'ESTELA'];
+  localStorage.setItem('crm_vendedores_v1', JSON.stringify(defaults));
+  return defaults;
+}
+
+function saveVendedores() {
+  localStorage.setItem('crm_vendedores_v1', JSON.stringify(vendedores));
+}
+
+let vendedores = loadVendedores();
+
+// Preenche qualquer <select> de vendedor na página
+function populateVendedorSelects() {
+  const baseOpts = `<option value="">Sem vendedor</option>` +
+    vendedores.map(v => `<option value="${v}">${v}</option>`).join('');
+
+  const safeSet = (id, html, curVal) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = html;
+    if (curVal !== undefined) el.value = curVal;
+  };
+
+  const fv = document.getElementById('f-vendedor');
+  safeSet('f-vendedor', baseOpts, fv ? fv.value : '');
+
+  const cv = document.getElementById('compra-vendedor');
+  if (cv) { const cur = cv.value; cv.innerHTML = vendedores.map(v=>`<option>${v}</option>`).join(''); cv.value = cur || vendedores[0] || ''; }
+
+  const filt = document.getElementById('filter-vendedor');
+  if (filt) {
+    const cur = filt.value;
+    filt.innerHTML = `<option value="">Todos</option>` +
+      vendedores.map(v => `<option value="${v}">${v}</option>`).join('') +
+      `<option value="sem">Sem vendedor</option>`;
+    filt.value = cur;
+  }
+
+  const fi = document.getElementById('filter-inativa-vend');
+  if (fi) {
+    const cur = fi.value;
+    fi.innerHTML = `<option value="">Todos vendedores</option>` +
+      vendedores.map(v => `<option value="${v}">${v}</option>`).join('');
+    fi.value = cur;
+  }
+
+  const iv = document.getElementById('imp-vendedor');
+  if (iv) { const cur = iv.value; iv.innerHTML = baseOpts; iv.value = cur; }
+
+  const mv = document.getElementById('man-vendedor');
+  if (mv) { const cur = mv.value; mv.innerHTML = baseOpts; mv.value = cur; }
+}
+
+// ===================== GESTÃO DE VENDEDORES =====================
+function renderVendedores() {
+  populateVendedorSelects();
+  const list = document.getElementById('vend-list');
+  if (!list) return;
+
+  list.innerHTML = vendedores.length === 0
+    ? '<div style="font-size:13px;color:var(--text-muted);padding:12px 0">Nenhum vendedor cadastrado.</div>'
+    : vendedores.map((v, i) => {
+        const {bg, color} = getVendedorColor(v);
+        const qtClientes = clientes.filter(c => c.vendedor === v).length;
+        return `
+          <div class="vend-item">
+            <div style="display:flex;align-items:center;gap:12px">
+              <span class="vendedor-chip" style="background:${bg};color:${color};font-size:13px;padding:4px 12px">${v}</span>
+              <span style="font-size:12px;color:var(--text-muted)">${qtClientes} cliente${qtClientes !== 1 ? 's' : ''}</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="action-btn" onclick="editarVendedor(${i})">Renomear</button>
+              <button class="action-btn" style="color:var(--red);border-color:var(--red)" onclick="removerVendedor(${i}, '${v}')">Remover</button>
+            </div>
+          </div>`;
+      }).join('');
+}
+
+function adicionarVendedor() {
+  const input = document.getElementById('novo-vendedor');
+  const nome = input.value.trim().toUpperCase();
+  if (!nome) { alert('Digite o nome do vendedor!'); return; }
+  if (vendedores.includes(nome)) { alert('Vendedor já cadastrado!'); return; }
+  vendedores.push(nome);
+  saveVendedores();
+  input.value = '';
+  renderVendedores();
+  showToast(`${nome} adicionado!`);
+}
+
+function removerVendedor(idx, nome) {
+  const qtClientes = clientes.filter(c => c.vendedor === nome).length;
+  const msg = qtClientes > 0
+    ? `Remover ${nome}? Ele(a) está vinculado(a) a ${qtClientes} cliente(s). Os clientes ficarão sem vendedor.`
+    : `Remover ${nome}?`;
+  if (!confirm(msg)) return;
+
+  // Desvincula clientes
+  clientes.forEach(c => { if (c.vendedor === nome) c.vendedor = ''; });
+  vendedores.splice(idx, 1);
+  saveData();
+  saveVendedores();
+  renderVendedores();
+  showToast(`${nome} removido.`);
+}
+
+function editarVendedor(idx) {
+  const nomeAtual = vendedores[idx];
+  const novo = prompt(`Novo nome para "${nomeAtual}":`, nomeAtual);
+  if (!novo || novo.trim() === '') return;
+  const novoUpper = novo.trim().toUpperCase();
+  if (vendedores.includes(novoUpper) && novoUpper !== nomeAtual) { alert('Já existe um vendedor com esse nome!'); return; }
+
+  // Atualiza em todos os clientes
+  clientes.forEach(c => { if (c.vendedor === nomeAtual) c.vendedor = novoUpper; });
+  vendedores[idx] = novoUpper;
+  saveData();
+  saveVendedores();
+  renderVendedores();
+  showToast(`Renomeado para ${novoUpper}!`);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('copy-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => { t.classList.remove('show'); t.textContent = 'Script copiado! ✓'; }, 2200);
+}
+
+// ===================== NAVIGATION =====================
+let currentPage = 'dashboard';
+let currentTab = 'tab-todos';
+
+function goPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(page)) n.classList.add('active');
+  });
+  currentPage = page;
+  const titles = {dashboard:'Dashboard',clientes:'Clientes',sugestoes:'Sugestões do Dia',compras:'Registrar Compra',inativas:'Clientes Inativas',aniversarios:'Aniversários',scripts:'Scripts de Atendimento',importar:'Importar Clientes',vendedores:'Gestão de Vendedores'};
+  document.getElementById('page-title').textContent = titles[page] || page;
+
+  if (page === 'clientes') { populateVendedorSelects(); renderTable(); }
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'sugestoes') renderSugestoes();
+  if (page === 'compras') { populateVendedorSelects(); renderCompras(); }
+  if (page === 'inativas') { populateVendedorSelects(); renderInativas(); }
+  if (page === 'aniversarios') renderAniversarios();
+  if (page === 'vendedores') renderVendedores();
+}
+
+function switchTab(tab, page) {
+  currentTab = tab;
+  document.querySelectorAll('#page-' + page + ' .tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  currentPage2 = currentPage;
+  renderTable();
+}
+
+// ===================== CLASSIFY =====================
+function recalcClassificacao(c) {
+  if (c.compras.length === 0) return c.classificacao;
+  const total = c.totalCompras;
+  const freq = c.compras.length;
+  if (total >= 2000 && freq >= 6) return 'A';
+  if (total >= 800 && freq >= 3) return 'B';
+  return 'C';
+}
+
+// ===================== RENDER DASHBOARD =====================
+// Regras de contato da Moderia
+const DIAS_CONTATO_NORMAL = 35;   // ciclo ideal: contato a cada 35 dias
+const DIAS_URGENTE       = 45;   // sem contato há 45+ dias = urgente no dashboard
+const DIAS_RISCO         = 90;   // 90 dias = em risco de inativar
+const DIAS_INATIVA       = 150;  // 150 dias = inativa
+
+function renderDashboard() {
+  const total = clientes.length;
+  const qtA    = clientes.filter(c => c.classificacao === 'A').length;
+  const qtB    = clientes.filter(c => c.classificacao === 'B').length;
+  const qtC    = clientes.filter(c => c.classificacao === 'C').length;
+  const qtNova = clientes.filter(c => c.classificacao === 'NOVA').length;
+
+  const inativas = clientes.filter(c => c.dataAtual && daysSince(c.dataAtual) > DIAS_INATIVA);
+
+  // Urgentes = qualquer classificação sem contato há 45+ dias (exceto NOVA que tem regra própria)
+  const urgentes = clientes.filter(c =>
+    c.classificacao !== 'NOVA' &&
+    (!c.dataAtual || daysSince(c.dataAtual) >= DIAS_URGENTE) &&
+    (!c.dataAtual || daysSince(c.dataAtual) < DIAS_INATIVA)
+  ).sort((a,b) => (daysSince(b.dataAtual||0)||999) - (daysSince(a.dataAtual||0)||999));
+
+  document.getElementById('metrics-area').innerHTML = `
+    <div class="metric-card">
+      <div class="metric-label">Total Clientes</div>
+      <div class="metric-value">${total}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Clientes A</div>
+      <div class="metric-value" style="color:var(--green)">${qtA}</div>
+      <span class="metric-badge badge-a">VIP</span>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Clientes B</div>
+      <div class="metric-value" style="color:var(--blue)">${qtB}</div>
+      <span class="metric-badge badge-b">Regular</span>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Clientes C</div>
+      <div class="metric-value" style="color:var(--amber)">${qtC}</div>
+      <span class="metric-badge badge-c">Ocasional</span>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">1ª Compra</div>
+      <div class="metric-value" style="color:var(--purple)">${qtNova}</div>
+      <span class="metric-badge badge-new">Novas</span>
+    </div>
+  `;
+
+  const pct = (n) => Math.round(n / total * 100);
+  document.getElementById('chart-section').innerHTML = `
+    <div class="chart-card">
+      <div class="chart-card-title">Distribuição por Classificação</div>
+      <div class="pie-wrap">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          ${buildDonut(qtA, qtB, qtC, qtNova, total)}
+        </svg>
+        <div class="pie-legend">
+          <div class="pie-legend-item"><div class="pie-dot" style="background:var(--green)"></div>A — ${qtA} (${pct(qtA)}%)</div>
+          <div class="pie-legend-item"><div class="pie-dot" style="background:var(--blue)"></div>B — ${qtB} (${pct(qtB)}%)</div>
+          <div class="pie-legend-item"><div class="pie-dot" style="background:var(--amber)"></div>C — ${qtC} (${pct(qtC)}%)</div>
+          <div class="pie-legend-item"><div class="pie-dot" style="background:var(--purple)"></div>1ª — ${qtNova} (${pct(qtNova)}%)</div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-title">Tamanhos mais comuns</div>
+      ${buildTamBar()}
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-title">Inativas (5+ meses)</div>
+      <div style="text-align:center; padding: 12px 0;">
+        <div style="font-family:'Cormorant Garamond',serif; font-size:38px; color:var(--red); font-weight:500">${inativas.length}</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">clientes sem retorno</div>
+        <div class="progress-bar" style="margin-top:14px;">
+          <div class="progress-fill" style="width:${Math.min(100, inativas.length/total*100)}%; background:var(--red);"></div>
+        </div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">${Math.round(inativas.length/total*100)}% da base</div>
+        <button class="btn btn-outline btn-sm" style="margin-top:14px;" onclick="goPage('inativas')">Ver inativas →</button>
+      </div>
+    </div>
+  `;
+
+  // Urgentes — sem contato há 45+ dias
+  const tbody = document.getElementById('urgentes-body');
+  const urgCount = document.getElementById('urgentes-count');
+  if (urgCount) urgCount.textContent = urgentes.length;
+
+  if (urgentes.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--text-muted);font-size:13px">
+      ✓ Todas as clientes foram contatadas nos últimos ${DIAS_URGENTE} dias!
+    </td></tr>`;
+  } else {
+    tbody.innerHTML = urgentes.slice(0, 12).map(c => {
+      const dias = c.dataAtual ? daysSince(c.dataAtual) : null;
+      const urgClass = dias === null || dias > 90 ? 'date-warn' : '';
+      return `
+        <tr>
+          <td class="cliente-name">${c.nome}</td>
+          <td>${classTag(c.classificacao)}</td>
+          <td>${vendedorChip(c.vendedor)}</td>
+          <td class="date-info ${urgClass}">${c.dataAtual ? excelDateToStr(c.dataAtual) : '—'}</td>
+          <td><span class="inativa-badge" style="background:var(--amber-light);color:var(--amber)">${dias !== null ? dias + ' dias' : 'sem registro'}</span></td>
+          <td class="spec-text" title="${c.perfil}">${c.perfil || '—'}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+}
+
+function buildDonut(a, b, c, n, total) {
+  const cx = 40, cy = 40, r = 30, strokeW = 14;
+  const circ = 2 * Math.PI * r;
+  const vals = [a, b, c, n];
+  const colors = ['var(--green)', 'var(--blue)', 'var(--amber)', 'var(--purple)'];
+  let offset = 0;
+  return vals.map((v, i) => {
+    const pct = v / total;
+    const dash = pct * circ;
+    const gap = circ - dash;
+    const el = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${colors[i]}" stroke-width="${strokeW}" stroke-dasharray="${dash.toFixed(1)} ${gap.toFixed(1)}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})" opacity="0.85"/>`;
+    offset += dash;
+    return el;
+  }).join('');
+}
+
+function buildTamBar() {
+  const sizes = ['PP','P','M','G','GG','G1','G2'];
+  const colors = {'PP':'#f3e5f5','P':'#e3f2fd','M':'#e8f5e9','G':'#fff8e1','GG':'#fce4ec','G1':'#f3e5f5','G2':'#fbe9e7'};
+  const textColors = {'PP':'#6a1b9a','P':'#1565c0','M':'#2e7d32','G':'#f57f17','GG':'#c2185b','G1':'#6a1b9a','G2':'#bf360c'};
+  const counts = {};
+  sizes.forEach(s => counts[s] = 0);
+  clientes.forEach(c => { if (counts[c.tam1] !== undefined) counts[c.tam1]++; });
+  const max = Math.max(...Object.values(counts));
+  return sizes.map(s => `
+    <div class="bar-item">
+      <span class="bar-label" style="font-size:11px;color:${textColors[s]};font-weight:500;">${s}</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${max?Math.round(counts[s]/max*100):0}%; background:${textColors[s]}"></div>
+      </div>
+      <span class="bar-count">${counts[s]}</span>
+    </div>
+  `).join('');
+}
+
+// ===================== RENDER TABLE =====================
+let sortCol = 'nome', sortDir = 1;
+let currentFiltered = [];
+let currentPage3 = 1;
+const PER_PAGE = 25;
+
+function applyFilters() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const vend = document.getElementById('filter-vendedor').value;
+  const tam = document.getElementById('filter-tamanho').value;
+  const jeans = document.getElementById('filter-jeans').value;
+
+  let tab = currentTab;
+  let base = clientes;
+  if (tab === 'tab-a') base = clientes.filter(c => c.classificacao === 'A');
+  else if (tab === 'tab-b') base = clientes.filter(c => c.classificacao === 'B');
+  else if (tab === 'tab-c') base = clientes.filter(c => c.classificacao === 'C');
+  else if (tab === 'tab-primeira') base = clientes.filter(c => c.classificacao === 'NOVA');
+
+  currentFiltered = base.filter(c => {
+    if (search && !c.nome.toLowerCase().includes(search)) return false;
+    if (vend === 'sem' && c.vendedor !== '') return false;
+    if (vend && vend !== 'sem' && c.vendedor !== vend) return false;
+    if (tam && c.tam1 !== tam && c.tam2 !== tam) return false;
+    if (jeans && c.jeans !== jeans) return false;
+    return true;
+  });
+
+  currentFiltered.sort((a, b) => {
+    let va = a[sortCol] || '', vb = b[sortCol] || '';
+    if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * sortDir;
+    return String(va).localeCompare(String(vb)) * sortDir;
+  });
+
+  currentPage3 = 1;
+  renderTableRows();
+}
+
+function renderTable() {
+  applyFilters();
+}
+
+function renderTableRows() {
+  const start = (currentPage3 - 1) * PER_PAGE;
+  const page = currentFiltered.slice(start, start + PER_PAGE);
+  const tbody = document.getElementById('clientes-body');
+
+  tbody.innerHTML = page.map(c => {
+    const dias = c.dataAtual ? daysSince(c.dataAtual) : null;
+    const dateClass = dias === null ? '' : dias > 60 ? 'date-warn' : 'date-ok';
+    return `
+      <tr>
+        <td class="cliente-name">${c.nome}</td>
+        <td>${classTag(c.classificacao)}</td>
+        <td>${vendedorChip(c.vendedor)}</td>
+        <td>${c.tam1 ? `<span class="tag-tam">${c.tam1}</span>` : '—'}</td>
+        <td>${c.tam2 ? `<span class="tag-tam">${c.tam2}</span>` : '—'}</td>
+        <td>${c.jeans ? `<span class="tag-tam">${c.jeans}</span>` : '—'}</td>
+        <td class="date-info ${dateClass}">${c.dataAtual ? excelDateToStr(c.dataAtual) : '—'}</td>
+        <td class="date-info">${c.dataPassada ? excelDateToStr(c.dataPassada) : '—'}</td>
+        <td><span class="spec-text" title="${(c.perfil||'').replace(/"/g,'&quot;')}">${c.perfil || '—'}</span></td>
+        <td>
+          <button class="action-btn edit-btn" data-id="${c.id}">Editar</button>
+        </td>
+      </tr>
+    `;
+  }).join('') || '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--text-muted)">Nenhuma cliente encontrada.</td></tr>';
+
+  // Attach click handlers after rendering (avoids inline onclick issues)
+  tbody.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      openModal('edit', parseInt(this.dataset.id));
+    });
+  });
+
+  const total = currentFiltered.length;
+  const totalPages = Math.ceil(total / PER_PAGE);
+  const pag = document.getElementById('pagination-area');
+  if (total === 0) { pag.innerHTML = ''; return; }
+
+  let btns = '';
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || Math.abs(i - currentPage3) <= 1)
+      btns += `<button class="pag-btn ${i === currentPage3 ? 'active' : ''}" onclick="goPageTable(${i})">${i}</button>`;
+    else if (Math.abs(i - currentPage3) === 2)
+      btns += `<span style="font-size:12px;color:var(--text-muted)">...</span>`;
+  }
+
+  pag.innerHTML = `
+    <span>Mostrando ${start + 1}–${Math.min(start + PER_PAGE, total)} de ${total}</span>
+    <div class="pag-btns">
+      <button class="pag-btn" onclick="goPageTable(${currentPage3 - 1})" ${currentPage3 === 1 ? 'disabled' : ''}>←</button>
+      ${btns}
+      <button class="pag-btn" onclick="goPageTable(${currentPage3 + 1})" ${currentPage3 === totalPages ? 'disabled' : ''}>→</button>
+    </div>
+  `;
+}
+
+function goPageTable(p) {
+  const max = Math.ceil(currentFiltered.length / PER_PAGE);
+  if (p < 1 || p > max) return;
+  currentPage3 = p;
+  renderTableRows();
+}
+
+function sortTable(col) {
+  if (sortCol === col) sortDir *= -1;
+  else { sortCol = col; sortDir = 1; }
+  applyFilters();
+}
+
+function clearFilters() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('filter-vendedor').value = '';
+  document.getElementById('filter-tamanho').value = '';
+  document.getElementById('filter-jeans').value = '';
+  applyFilters();
+}
+
+// ===================== HELPERS =====================
+function classTag(cls) {
+  const map = {A:'dot-a',B:'dot-b',C:'dot-c',NOVA:'dot-new'};
+  const label = {A:'● A',B:'● B',C:'● C',NOVA:'★ Nova'};
+  return `<span class="classification-dot ${map[cls]||'dot-c'}">${label[cls]||cls}</span>`;
+}
+
+// Paleta de cores para chips de vendedores dinâmicos
+const CHIP_COLORS = [
+  {bg:'#d8f3dc',color:'#1b5e20'},
+  {bg:'#F7C6D9',color:'#880e4f'},
+  {bg:'#dceeff',color:'#1a4f8c'},
+  {bg:'#ede0ff',color:'#4a148c'},
+  {bg:'#fff3cc',color:'#7a4f00'},
+  {bg:'#fde8e0',color:'#7c2a00'},
+  {bg:'#e0f4f1',color:'#004d40'},
+];
+
+function getVendedorColor(nome) {
+  if (!nome) return {bg:'#f0f0f0',color:'#999'};
+  const idx = Math.abs([...nome].reduce((a,c) => a + c.charCodeAt(0), 0)) % CHIP_COLORS.length;
+  return CHIP_COLORS[idx];
+}
+
+function vendedorChip(v) {
+  if (!v) return '<span class="vendedor-chip chip-sem">—</span>';
+  const {bg, color} = getVendedorColor(v);
+  return `<span class="vendedor-chip" style="background:${bg};color:${color}">${v}</span>`;
+}
+
+// ===================== MODAL =====================
+function openModal(mode, id) {
+  try {
+    const modal = document.getElementById('modal-cliente');
+    if (!modal) return;
+    modal.classList.add('open');
+
+    // Populate vendedor select safely
+    try { populateVendedorSelects(); } catch(e) {}
+
+    const delBtn = document.getElementById('btn-excluir');
+
+    if (mode === 'new') {
+      document.getElementById('modal-titulo').textContent = 'Nova Cliente';
+      document.getElementById('f-nome').value = '';
+      document.getElementById('f-class').value = 'NOVA';
+      setSelectSafe('f-vendedor', vendedores[0] || '');
+      document.getElementById('f-tam1').value = '';
+      document.getElementById('f-tam2').value = '';
+      document.getElementById('f-jeans').value = '';
+      document.getElementById('f-perfil').value = '';
+      document.getElementById('f-aniversario').value = '';
+      document.getElementById('f-data1').value = '';
+      document.getElementById('f-data2').value = '';
+      document.getElementById('edit-id').value = '';
+      if (delBtn) delBtn.style.display = 'none';
+    } else {
+      const c = clientes.find(x => x.id === id);
+      if (!c) return;
+      document.getElementById('modal-titulo').textContent = 'Editar — ' + c.nome.split(' ')[0];
+      document.getElementById('edit-id').value = id;
+      document.getElementById('f-nome').value = c.nome || '';
+      document.getElementById('f-class').value = c.classificacao || 'C';
+      setSelectSafe('f-vendedor', c.vendedor || '');
+      setSelectSafe('f-tam1', c.tam1 || '');
+      setSelectSafe('f-tam2', c.tam2 || '');
+      setSelectSafe('f-jeans', String(c.jeans || ''));
+      document.getElementById('f-perfil').value = c.perfil || '';
+      document.getElementById('f-aniversario').value = c.aniversario || '';
+      document.getElementById('f-data1').value = (c.dataAtual && !isNaN(Number(c.dataAtual))) ? excelDateToInput(Number(c.dataAtual)) : '';
+      document.getElementById('f-data2').value = (c.dataPassada && !isNaN(Number(c.dataPassada))) ? excelDateToInput(Number(c.dataPassada)) : '';
+      if (delBtn) { delBtn.style.display = 'inline-flex'; delBtn.onclick = () => excluirCliente(id); }
+    }
+  } catch(e) {
+    console.error('Erro ao abrir modal:', e);
+  }
+}
+
+function setSelectSafe(id, val) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  const opt = Array.from(sel.options).find(o => o.value === val);
+  sel.value = opt ? val : '';
+}
+
+function excluirCliente(id) {
+  const c = clientes.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm(`Excluir ${c.nome}? Esta ação não pode ser desfeita.`)) return;
+  clientes = clientes.filter(x => x.id !== id);
+  saveData();
+  closeModal();
+  if (currentPage === 'clientes') renderTable();
+  if (currentPage === 'dashboard') renderDashboard();
+}
+
+function excelDateToInput(serial) {
+  const d = excelDateToJS(serial);
+  if (!d) return '';
+  return d.toISOString().split('T')[0];
+}
+
+function inputToExcelDate(str) {
+  if (!str) return null;
+  const d = new Date(str + 'T12:00:00');
+  return Math.floor((d.getTime() / 86400000) + 25569);
+}
+
+function closeModal() {
+  document.getElementById('modal-cliente').classList.remove('open');
+}
+
+function saveCliente() {
+  const nome = document.getElementById('f-nome').value.trim();
+  if (!nome) { alert('Nome é obrigatório!'); return; }
+
+  const id = document.getElementById('edit-id').value;
+  const obj = {
+    nome: nome.toUpperCase(),
+    classificacao: document.getElementById('f-class').value,
+    vendedor: document.getElementById('f-vendedor').value,
+    tam1: document.getElementById('f-tam1').value,
+    tam2: document.getElementById('f-tam2').value,
+    jeans: document.getElementById('f-jeans').value,
+    perfil: document.getElementById('f-perfil').value,
+    aniversario: document.getElementById('f-aniversario').value,
+    dataAtual: inputToExcelDate(document.getElementById('f-data1').value),
+    dataPassada: inputToExcelDate(document.getElementById('f-data2').value),
+  };
+
+  if (id) {
+    const idx = clientes.findIndex(c => c.id == id);
+    if (idx > -1) clientes[idx] = { ...clientes[idx], ...obj };
+  } else {
+    const newId = Math.max(0, ...clientes.map(c => c.id)) + 1;
+    clientes.push({ id: newId, ...obj, compras: [], totalCompras: 0, frequencia: 0 });
+  }
+
+  saveData();
+  closeModal();
+
+  // Refresh whatever page is active
+  if (currentPage === 'clientes') renderTable();
+  else if (currentPage === 'dashboard') renderDashboard();
+  else if (currentPage === 'sugestoes') renderSugestoes();
+  else if (currentPage === 'inativas') renderInativas();
+  else if (currentPage === 'aniversarios') renderAniversarios();
+}
+
+// ===================== SUGESTOES =====================
+function renderSugestoes() {
+  // A e B: ciclo de 35 dias. Sugerir contato quando está chegando no prazo (30+ dias) ou já passou (35+ dias)
+  const sugA = clientes.filter(c =>
+    c.classificacao === 'A' && (!c.dataAtual || daysSince(c.dataAtual) >= 30) && (!c.dataAtual || daysSince(c.dataAtual) < DIAS_INATIVA)
+  ).sort((a,b) => (daysSince(b.dataAtual||0)||999) - (daysSince(a.dataAtual||0)||999));
+
+  document.getElementById('sug-a-count').textContent = sugA.length;
+  document.getElementById('sug-a-list').innerHTML = sugA.slice(0,8).map(c => {
+    const dias = c.dataAtual ? daysSince(c.dataAtual) : null;
+    const urgente = dias === null || dias >= DIAS_URGENTE;
+    return `
+      <div class="sugestao-item">
+        <div class="sugestao-info">
+          <p>${c.nome}</p>
+          <span>${c.vendedor || '—'} · ${dias !== null ? dias + ' dias sem contato' : 'sem registro'} ${urgente ? '⚠' : ''}</span>
+        </div>
+        <button class="action-btn edit-btn" data-id="${c.id}">Editar</button>
+      </div>`;
+  }).join('') || '<div style="font-size:12px;color:var(--text-muted);padding:12px 0">Todas as clientes A estão em dia! ✓</div>';
+
+  const sugB = clientes.filter(c =>
+    c.classificacao === 'B' && (!c.dataAtual || daysSince(c.dataAtual) >= 30) && (!c.dataAtual || daysSince(c.dataAtual) < DIAS_INATIVA)
+  ).sort((a,b) => (daysSince(b.dataAtual||0)||999) - (daysSince(a.dataAtual||0)||999));
+
+  document.getElementById('sug-b-count').textContent = sugB.length;
+  document.getElementById('sug-b-list').innerHTML = sugB.slice(0,8).map(c => {
+    const dias = c.dataAtual ? daysSince(c.dataAtual) : null;
+    const urgente = dias === null || dias >= DIAS_URGENTE;
+    return `
+      <div class="sugestao-item">
+        <div class="sugestao-info">
+          <p>${c.nome}</p>
+          <span>${c.vendedor || '—'} · ${dias !== null ? dias + ' dias sem contato' : 'sem registro'} ${urgente ? '⚠' : ''}</span>
+        </div>
+        <button class="action-btn edit-btn" data-id="${c.id}">Editar</button>
+      </div>`;
+  }).join('') || '<div style="font-size:12px;color:var(--text-muted);padding:12px 0">Todas as clientes B estão em dia! ✓</div>';
+
+  // 1ª Compra: sempre sugerir follow-up
+  const sugNova = clientes.filter(c => c.classificacao === 'NOVA')
+    .sort((a,b) => (daysSince(b.dataAtual||0)||999) - (daysSince(a.dataAtual||0)||999));
+  document.getElementById('sug-nova-count').textContent = sugNova.length;
+  document.getElementById('sug-nova-list').innerHTML = sugNova.slice(0,8).map(c => `
+    <div class="sugestao-item">
+      <div class="sugestao-info">
+        <p>${c.nome}</p>
+        <span>1ª compra · Engajar para próxima visita</span>
+      </div>
+      <button class="action-btn edit-btn" data-id="${c.id}">Editar</button>
+    </div>`
+  ).join('') || '<div style="font-size:12px;color:var(--text-muted);padding:12px 0">Nenhuma cliente nova no momento.</div>';
+
+  // Em risco: 90 a 150 dias sem contato
+  const sugRisco = clientes.filter(c =>
+    c.classificacao !== 'NOVA' && c.dataAtual &&
+    daysSince(c.dataAtual) >= DIAS_RISCO && daysSince(c.dataAtual) < DIAS_INATIVA
+  ).sort((a,b) => daysSince(b.dataAtual) - daysSince(a.dataAtual));
+
+  document.getElementById('sug-risco-count').textContent = sugRisco.length;
+  document.getElementById('sug-risco-list').innerHTML = sugRisco.slice(0,8).map(c => `
+    <div class="sugestao-item">
+      <div class="sugestao-info">
+        <p>${c.nome}</p>
+        <span>${classTag(c.classificacao)} · ${daysSince(c.dataAtual)} dias — risco de inativar</span>
+      </div>
+      <button class="action-btn edit-btn" data-id="${c.id}">Editar</button>
+    </div>`
+  ).join('') || '<div style="font-size:12px;color:var(--text-muted);padding:12px 0">Nenhuma em risco agora!</div>';
+}
+
+// ===================== COMPRAS =====================
+function renderCompras() {
+  // Populate select
+  const sel = document.getElementById('compra-cliente');
+  sel.innerHTML = '<option value="">Selecionar cliente...</option>' +
+    clientes.sort((a,b) => a.nome.localeCompare(b.nome)).map(c => `<option value="${c.id}">${c.nome} (${c.classificacao})</option>`).join('');
+
+  // Set today as default
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('compra-data').value = today;
+
+  // Populate aniv client select too
+  const anivSel = document.getElementById('aniv-cliente');
+  if (anivSel) {
+    anivSel.innerHTML = clientes.sort((a,b) => a.nome.localeCompare(b.nome)).map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+  }
+
+  renderComprasBody();
+}
+
+function registrarCompra() {
+  const cid = parseInt(document.getElementById('compra-cliente').value);
+  const data = document.getElementById('compra-data').value;
+  const valor = parseFloat(document.getElementById('compra-valor').value);
+  const vend = document.getElementById('compra-vendedor').value;
+  const obs = document.getElementById('compra-obs').value;
+
+  if (!cid || !data || isNaN(valor) || valor <= 0) {
+    alert('Preencha todos os campos obrigatórios (cliente, data, valor)!');
+    return;
+  }
+
+  const idx = clientes.findIndex(c => c.id === cid);
+  if (idx === -1) return;
+
+  const c = clientes[idx];
+  if (!c.compras) c.compras = [];
+
+  const serial = inputToExcelDate(data);
+  c.compras.push({ data: serial, valor, obs, vendedor: vend });
+  c.totalCompras = c.compras.reduce((s, x) => s + x.valor, 0);
+  c.frequencia = c.compras.length;
+  c.dataPassada = c.dataAtual;
+  c.dataAtual = serial;
+  c.vendedor = vend;
+
+  // Recalculate classification
+  const novaClass = recalcClassificacao(c);
+  if (novaClass !== c.classificacao) {
+    alert(`🎉 Classificação atualizada! ${c.nome} subiu de ${c.classificacao} para ${novaClass}`);
+    c.classificacao = novaClass;
+  }
+
+  compras.push({ clienteId: cid, clienteNome: c.nome, data: serial, valor, obs, vendedor: vend, classificacao: c.classificacao });
+  saveData();
+
+  // Reset form
+  document.getElementById('compra-cliente').value = '';
+  document.getElementById('compra-valor').value = '';
+  document.getElementById('compra-obs').value = '';
+
+  renderComprasBody();
+  alert('Compra registrada com sucesso!');
+}
+
+function renderComprasBody() {
+  const tbody = document.getElementById('compras-body');
+  const recentes = [...compras].reverse().slice(0, 30);
+  if (recentes.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-muted)">Nenhuma compra registrada ainda.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = recentes.map(cp => {
+    const c = clientes.find(x => x.id === cp.clienteId);
+    return `
+      <tr>
+        <td class="cliente-name">${cp.clienteNome}</td>
+        <td>${classTag(cp.classificacao)}</td>
+        <td class="date-info">${cp.data ? excelDateToStr(cp.data) : '—'}</td>
+        <td><strong>R$ ${cp.valor.toFixed(2).replace('.',',')}</strong></td>
+        <td>R$ ${c ? c.totalCompras.toFixed(2).replace('.',',') : '—'}</td>
+        <td>${c ? c.frequencia + 'x' : '—'}</td>
+        <td>${vendedorChip(cp.vendedor)}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ===================== INATIVAS =====================
+let inativasList = [];
+
+function renderInativas() {
+  inativasList = clientes.filter(c => {
+    if (!c.dataAtual) return false;
+    return daysSince(c.dataAtual) > 150;
+  }).sort((a, b) => (b.dataAtual||0) - (a.dataAtual||0));
+
+  renderInativasBody(inativasList);
+}
+
+function filterInativas(term) {
+  const f = inativasList.filter(c => c.nome.toLowerCase().includes(term.toLowerCase()));
+  renderInativasBody(f);
+}
+
+function filterInativaVendedor(v) {
+  const f = v ? inativasList.filter(c => c.vendedor === v) : inativasList;
+  renderInativasBody(f);
+}
+
+function renderInativasBody(list) {
+  const tbody = document.getElementById('inativas-body');
+  if (list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--green)">Nenhuma cliente inativa encontrada!</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(c => {
+    const dias = daysSince(c.dataAtual);
+    return `
+      <tr>
+        <td class="cliente-name">${c.nome}</td>
+        <td>${classTag(c.classificacao)}</td>
+        <td>${vendedorChip(c.vendedor)}</td>
+        <td class="date-info date-warn">${excelDateToStr(c.dataAtual)}</td>
+        <td><span class="inativa-badge">⚠ ${dias} dias</span></td>
+        <td>${c.tam1 ? `<span class="tag-tam">${c.tam1}</span>` : '—'}</td>
+        <td class="spec-text" title="${c.perfil}">${c.perfil || '—'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ===================== ANIVERSÁRIOS =====================
+function salvarAniversario() {
+  const cid = parseInt(document.getElementById('aniv-cliente').value);
+  const data = document.getElementById('aniv-data').value;
+  if (!cid || !data) return;
+  const idx = clientes.findIndex(c => c.id === cid);
+  if (idx === -1) return;
+  clientes[idx].aniversario = data;
+  saveData();
+  alert('Aniversário salvo!');
+  renderAniversarios();
+}
+
+function proximoAniversario(anivStr) {
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const aniv = new Date(anivStr + 'T00:00:00');
+  let d = new Date(hoje.getFullYear(), aniv.getMonth(), aniv.getDate());
+  if (d < hoje) d.setFullYear(hoje.getFullYear() + 1);
+  return { date: d, dias: Math.round((d - hoje) / 86400000) };
+}
+
+function renderAniversarios() {
+  const sel = document.getElementById('aniv-cliente');
+  if (sel) sel.innerHTML = [...clientes].sort((a,b) => a.nome.localeCompare(b.nome))
+    .map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+
+  // Build full list with dias
+  const comAniv = clientes
+    .filter(c => c.aniversario)
+    .map(c => ({ ...c, _prox: proximoAniversario(c.aniversario) }))
+    .sort((a,b) => a._prox.dias - b._prox.dias);
+
+  const daSemana = comAniv.filter(c => c._prox.dias <= 7);
+  const doMes    = comAniv.filter(c => c._prox.dias > 7 && c._prox.dias <= 30);
+  const proximos = comAniv.filter(c => c._prox.dias > 30 && c._prox.dias <= 90);
+
+  // Alerts
+  const alertArea = document.getElementById('aniv-alerts');
+  if (alertArea) {
+    let html = '';
+    if (daSemana.length > 0) html += `
+      <div style="background:var(--red-light);border:1px solid #f5c6c6;border-radius:var(--radius);padding:14px 18px;margin-bottom:12px;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:22px">🎂</span>
+        <div>
+          <div style="font-weight:500;font-size:13px;color:var(--red)">Aniversário esta semana!</div>
+          <div style="font-size:12px;color:var(--red);margin-top:2px">${daSemana.map(c => `${c.nome.split(' ')[0]} (${c._prox.dias === 0 ? 'hoje!' : 'em ' + c._prox.dias + ' dia' + (c._prox.dias > 1 ? 's' : '')})`).join(' · ')}</div>
+        </div>
+      </div>`;
+    if (doMes.length > 0) html += `
+      <div style="background:var(--amber-light);border:1px solid #ffe082;border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:22px">🎀</span>
+        <div>
+          <div style="font-weight:500;font-size:13px;color:var(--amber)">Aniversariantes este mês</div>
+          <div style="font-size:12px;color:var(--amber);margin-top:2px">${doMes.map(c => `${c.nome.split(' ')[0]} (dia ${new Date(c.aniversario+'T00:00:00').getDate()})`).join(' · ')}</div>
+        </div>
+      </div>`;
+    if (html === '') html = `<div style="font-size:13px;color:var(--text-muted);padding:8px 0 16px">Nenhum aniversário nos próximos 30 dias. Cadastre as datas das suas clientes!</div>`;
+    alertArea.innerHTML = html;
+  }
+
+  // Table: próximos 90 dias
+  const tbody = document.getElementById('aniv-body');
+  const todas = [...daSemana, ...doMes, ...proximos];
+  if (todas.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted)">Nenhuma aniversariante nos próximos 90 dias.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = todas.map(c => {
+    const { dias } = c._prox;
+    const aniv = new Date(c.aniversario + 'T00:00:00');
+    let badge, badgeStyle;
+    if (dias === 0)      { badge = '🎉 Hoje!';       badgeStyle = 'background:var(--red-light);color:var(--red)'; }
+    else if (dias <= 7)  { badge = `Em ${dias}d`;     badgeStyle = 'background:var(--red-light);color:var(--red)'; }
+    else if (dias <= 30) { badge = `Em ${dias}d`;     badgeStyle = 'background:var(--amber-light);color:var(--amber)'; }
+    else                 { badge = `Em ${dias}d`;     badgeStyle = 'background:var(--blue-light);color:var(--blue)'; }
+    return `
+      <tr>
+        <td class="cliente-name">${dias <= 7 ? '🎂 ' : ''}${c.nome}</td>
+        <td>${classTag(c.classificacao)}</td>
+        <td>${vendedorChip(c.vendedor)}</td>
+        <td class="date-info">${aniv.toLocaleDateString('pt-BR', {day:'2-digit', month:'long'})}</td>
+        <td><span class="metric-badge" style="${badgeStyle}">${badge}</span></td>
+      </tr>`;
+  }).join('');
+}
+
+// ===================== EXPORT =====================
+function exportCSV() {
+  const rows = [['Nome','Classificação','Vendedor','Tamanho 1','Tamanho 2','Jeans','Último Contato','Contato Anterior','Perfil','Aniversário']];
+  clientes.forEach(c => {
+    rows.push([c.nome, c.classificacao, c.vendedor, c.tam1, c.tam2, c.jeans,
+      c.dataAtual ? excelDateToStr(c.dataAtual) : '',
+      c.dataPassada ? excelDateToStr(c.dataPassada) : '',
+      c.perfil, c.aniversario || '']);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'CRModeria_clientes.csv'; a.click();
+}
+
+// ===================== IMPORT =====================
+let csvParsedRows = [];
+
+function switchImportTab(tab) {
+  ['colar','csv','manual'].forEach(t => {
+    document.getElementById('ipanel-' + t).style.display = t === tab ? '' : 'none';
+    document.getElementById('itab-' + t).classList.toggle('active', t === tab);
+  });
+}
+
+// Helper: clean a name — remove CPF (xxx.xxx.xxx-xx pattern), trim, uppercase
+function cleanName(raw) {
+  return raw
+    .replace(/\d{3}[\.\s]?\d{3}[\.\s]?\d{3}[\-\.\s]?\d{2}/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toUpperCase();
+}
+
+function nextId() {
+  return Math.max(0, ...clientes.map(c => c.id)) + 1;
+}
+
+function isDuplicate(nome) {
+  const n = nome.toUpperCase().trim();
+  return clientes.some(c => c.nome.toUpperCase().trim() === n);
+}
+
+// ---- COLAR NOMES ----
+function importarNomes() {
+  const raw = document.getElementById('imp-nomes').value;
+  const cls = document.getElementById('imp-class').value;
+  const vend = document.getElementById('imp-vendedor').value;
+
+  const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 2);
+  if (lines.length === 0) { alert('Nenhum nome encontrado!'); return; }
+
+  let adicionadas = 0, ignoradas = 0;
+  const log = [];
+  let nextid = nextId();
+
+  lines.forEach(line => {
+    const nome = cleanName(line);
+    if (!nome || nome.length < 2) { ignoradas++; log.push({nome: line, status:'ignorado', motivo:'nome inválido'}); return; }
+    if (isDuplicate(nome)) { ignoradas++; log.push({nome, status:'ignorado', motivo:'já existe'}); return; }
+    clientes.push({
+      id: nextid++, nome, classificacao: cls, vendedor: vend,
+      tam1:'', tam2:'', jeans:'', perfil:'', aniversario:'',
+      dataAtual: null, dataPassada: null, compras:[], totalCompras:0, frequencia:0
+    });
+    adicionadas++;
+    log.push({nome, status:'adicionada', motivo:''});
+  });
+
+  saveData();
+  document.getElementById('imp-status').textContent = `✅ ${adicionadas} adicionadas, ${ignoradas} ignoradas`;
+  showImportLog(log);
+  document.getElementById('imp-nomes').value = '';
+}
+
+// ---- CSV UPLOAD ----
+function handleFileUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  if (ext === 'csv' || ext === 'tsv' || ext === 'txt') {
+    const reader = new FileReader();
+    reader.onload = e => parseCSVText(e.target.result, ext === 'tsv' ? '\t' : ',');
+    reader.readAsText(file, 'UTF-8');
+  } else if (ext === 'xlsx' || ext === 'xls') {
+    // Try to read as text (basic xlsx text extraction won't work perfectly; guide user to save as CSV)
+    document.getElementById('csv-preview').style.display = 'block';
+    document.getElementById('csv-prev-head').innerHTML = '<tr><th>Aviso</th></tr>';
+    document.getElementById('csv-prev-body').innerHTML = `<tr><td style="padding:16px;color:var(--amber)">
+      Para importar um arquivo Excel, por favor salve ele como CSV primeiro:<br>
+      <strong>Arquivo → Salvar Como → CSV (separado por vírgulas)</strong><br>
+      Depois faça o upload do arquivo .csv aqui.
+    </td></tr>`;
+  }
+}
+
+function parseCSVText(text, sep) {
+  // Auto-detect separator
+  const firstLine = text.split('\n')[0];
+  if (sep === ',' && firstLine.split(';').length > firstLine.split(',').length) sep = ';';
+
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+  if (lines.length < 2) { alert('Arquivo muito pequeno ou vazio'); return; }
+
+  // Parse header
+  const headers = parseCSVLine(lines[0], sep).map(h => h.toLowerCase().trim()
+    .replace('classificação','classificacao').replace('classificaçao','classificacao')
+    .replace('tamanho 1','tam1').replace('tamanho1','tam1')
+    .replace('tamanho 2','tam2').replace('tamanho2','tam2')
+    .replace('último contato','dataatual').replace('contato anterior','datapassada')
+    .replace('aniversário','aniversario').replace('aniversario','aniversario')
+  );
+
+  // Parse first 5 rows for preview
+  const preview = lines.slice(1, 6).map(l => parseCSVLine(l, sep));
+  csvParsedRows = lines.slice(1).map(l => {
+    const vals = parseCSVLine(l, sep);
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (vals[i] || '').trim());
+    return obj;
+  }).filter(r => r.nome || r.cliente);
+
+  // Show preview
+  document.getElementById('csv-preview').style.display = 'block';
+  document.getElementById('csv-prev-head').innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+  document.getElementById('csv-prev-body').innerHTML = preview.map(row =>
+    '<tr>' + row.map(v => `<td style="font-size:12px">${v}</td>`).join('') + '</tr>'
+  ).join('');
+}
+
+function parseCSVLine(line, sep) {
+  const result = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQ = !inQ; }
+    else if (ch === sep && !inQ) { result.push(cur); cur = ''; }
+    else { cur += ch; }
+  }
+  result.push(cur);
+  return result.map(v => v.replace(/^"|"$/g,'').trim());
+}
+
+function confirmarCSV() {
+  if (csvParsedRows.length === 0) { alert('Nenhuma linha válida encontrada.'); return; }
+  const cls = document.getElementById('csv-class-default').value;
+
+  let adicionadas = 0, ignoradas = 0;
+  const log = [];
+  let nextid = nextId();
+
+  csvParsedRows.forEach(row => {
+    const nomeBruto = row.nome || row.cliente || row.name || '';
+    const nome = cleanName(nomeBruto);
+    if (!nome || nome.length < 2) { ignoradas++; log.push({nome: nomeBruto||'—', status:'ignorado', motivo:'nome inválido'}); return; }
+    if (isDuplicate(nome)) { ignoradas++; log.push({nome, status:'ignorado', motivo:'já existe'}); return; }
+
+    const classificacao = (['A','B','C','NOVA'].includes((row.classificacao||'').toUpperCase()))
+      ? row.classificacao.toUpperCase() : cls;
+    const vendedor = (row.vendedor||'').toUpperCase();
+    const tam1 = (row.tam1||'').toUpperCase();
+    const tam2 = (row.tam2||'').toUpperCase();
+
+    clientes.push({
+      id: nextid++, nome, classificacao,
+      vendedor: ['RAUL','ESTELA'].includes(vendedor) ? vendedor : '',
+      tam1, tam2, jeans: row.jeans||'',
+      perfil: row.perfil||'', aniversario: row.aniversario||'',
+      dataAtual: null, dataPassada: null, compras:[], totalCompras:0, frequencia:0
+    });
+    adicionadas++;
+    log.push({nome, status:'adicionada', motivo:''});
+  });
+
+  saveData();
+  document.getElementById('csv-status').textContent = `✅ ${adicionadas} adicionadas, ${ignoradas} ignoradas`;
+  showImportLog(log);
+  csvParsedRows = [];
+}
+
+// ---- MANUAL ----
+function adicionarManual() {
+  const nome = cleanName(document.getElementById('man-nome').value);
+  if (!nome || nome.length < 2) { alert('Informe o nome!'); return; }
+  if (isDuplicate(nome)) {
+    document.getElementById('man-status').textContent = '⚠ Já existe!';
+    document.getElementById('man-status').style.color = 'var(--amber)';
+    return;
+  }
+  clientes.push({
+    id: nextId(), nome,
+    classificacao: document.getElementById('man-class').value,
+    vendedor: document.getElementById('man-vendedor').value,
+    tam1: document.getElementById('man-tam').value,
+    tam2:'', jeans:'',
+    perfil: document.getElementById('man-perfil').value,
+    aniversario:'', dataAtual:null, dataPassada:null,
+    compras:[], totalCompras:0, frequencia:0
+  });
+  saveData();
+  document.getElementById('man-nome').value = '';
+  document.getElementById('man-perfil').value = '';
+  document.getElementById('man-status').textContent = `✅ ${nome} adicionada!`;
+  document.getElementById('man-status').style.color = 'var(--green)';
+  setTimeout(() => document.getElementById('man-status').textContent = '', 3000);
+}
+
+// ---- LOG ----
+function showImportLog(log) {
+  document.getElementById('import-log').style.display = 'block';
+  document.getElementById('import-log-body').innerHTML = log.map((l, i) => `
+    <tr>
+      <td style="font-size:12px;color:var(--text-muted)">${i+1}</td>
+      <td style="font-size:12px">${l.nome}</td>
+      <td><span class="${l.status==='adicionada' ? 'metric-badge badge-a' : 'metric-badge badge-inactive'}">${l.status}${l.motivo ? ' — ' + l.motivo : ''}</span></td>
+    </tr>
+  `).join('');
+}
+
+// ===================== SCRIPTS =====================
+function switchScriptTab(tab, e) {
+  ['abc','nova','inativa','aniv'].forEach(t => {
+    document.getElementById('spanel-' + t).style.display = t === tab ? '' : 'none';
+  });
+  document.querySelectorAll('#page-scripts .tab').forEach(t => t.classList.remove('active'));
+  if (e && e.target) e.target.classList.add('active');
+}
+
+function copyScript(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent.trim()).then(() => {
+    const toast = document.getElementById('copy-toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  });
+}
+
+async function sincronizarAgora() {
+  setSyncStatus('syncing', 'Carregando...');
+  const lista = await loadFromSheets();
+  if (lista && lista.length > 0) {
+    clientes = lista;
+    saveLocal();
+    renderDashboard();
+    showToast('Dados sincronizados da nuvem!');
+  } else {
+    setSyncStatus('local', 'Nada novo na nuvem');
+  }
+}
+
+// ===================== INIT =====================
+// Global click delegation for edit buttons
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('edit-btn')) {
+    const id = parseInt(e.target.dataset.id);
+    if (!isNaN(id)) openModal('edit', id);
+  }
+});
+
+document.getElementById('sidebar-date').textContent = new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+
+setTimeout(() => {
+  populateVendedorSelects();
+  const sel = document.getElementById('aniv-cliente');
+  if (sel) sel.innerHTML = [...clientes].sort((a,b) => a.nome.localeCompare(b.nome)).map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+}, 100);
+
+// Tenta carregar da nuvem ao iniciar
+loadFromSheets().then(lista => {
+  if (lista && lista.length > 0) {
+    clientes = lista;
+    saveLocal();
+  }
+  renderDashboard();
+  setSyncStatus(lista ? 'ok' : 'local');
+}).catch(() => {
+  renderDashboard();
+  setSyncStatus('local');
+});
+</script>
+</body>
+</html>

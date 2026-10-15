@@ -816,9 +816,174 @@
   }
 
   .copy-toast.show { opacity: 1; }
+
+  /* ── TELA DE LOGIN ── */
+  #login-screen {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  #login-screen.hidden { display: none; }
+
+  .login-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 48px 40px 40px;
+    width: 360px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+
+  .login-card h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--rose-dark);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .login-card .login-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .login-card label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-align: left;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .login-card input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+  }
+
+  .login-card input[type="password"]:focus {
+    border-color: var(--secondary);
+  }
+
+  .login-erro {
+    font-size: 12px;
+    color: var(--red);
+    min-height: 18px;
+    margin-bottom: 8px;
+    text-align: left;
+  }
+
+  /* ── MODAL SENHA GERENTE ── */
+  #modal-gerente {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,26,26,0.6);
+    z-index: 99998;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+  }
+  #modal-gerente.open { display: flex; }
+
+  .gerente-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px 28px;
+    width: 320px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+
+  .gerente-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--rose-dark);
+    margin-bottom: 6px;
+  }
+
+  .gerente-card p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .gerente-card input[type="password"] {
+    width: 100%;
+    padding: 11px 13px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 6px;
+  }
+
+  .gerente-card input[type="password"]:focus { border-color: var(--secondary); }
+
+  .gerente-erro {
+    font-size: 12px;
+    color: var(--red);
+    min-height: 18px;
+    margin-bottom: 12px;
+    text-align: left;
+  }
 </style>
 </head>
 <body>
+
+<!-- TELA DE LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <h1>CRModeria</h1>
+    <div class="login-sub">Sistema de Relacionamento</div>
+    <label for="login-senha">Senha de acesso</label>
+    <input type="password" id="login-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+    <div class="login-erro" id="login-erro"></div>
+    <button class="btn btn-accent" style="width:100%;padding:13px" onclick="fazerLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- MODAL SENHA GERENTE -->
+<div id="modal-gerente">
+  <div class="gerente-card">
+    <h3>🔒 Área restrita</h3>
+    <p>Para alterar o vendedor responsável, digite a senha de gerente.</p>
+    <input type="password" id="gerente-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')confirmarGerente()">
+    <div class="gerente-erro" id="gerente-erro"></div>
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="action-btn" style="flex:1;padding:10px" onclick="cancelarGerente()">Cancelar</button>
+      <button class="btn btn-accent" style="flex:1;padding:10px" onclick="confirmarGerente()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <div class="copy-toast" id="copy-toast">Script copiado! ✓</div>
 
 <!-- SIDEBAR -->
@@ -861,6 +1026,9 @@
     </div>
     <div class="nav-item" onclick="goPage('importar')">
       <span class="nav-icon">↑</span> Importar Clientes
+    </div>
+    <div class="nav-item" onclick="goPage('configuracoes')">
+      <span class="nav-icon">⚙</span> Configurações
     </div>
   </nav>
   <div class="sidebar-date" id="sidebar-date"></div>
@@ -1392,6 +1560,72 @@
       </div>
     </div><!-- fim page-scripts -->
 
+    <!-- PAGE: CONFIGURAÇÕES -->
+    <div class="page" id="page-configuracoes">
+      <div class="card" style="max-width:480px">
+        <div class="card-title">🔑 Senhas do Sistema</div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.6">
+          Gerencie as senhas de acesso e de gerente. A <strong>senha de acesso</strong> é pedida ao abrir o sistema.
+          A <strong>senha de gerente</strong> protege o campo de vendedor ao editar clientes.
+        </p>
+
+        <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:500;margin-bottom:14px;color:var(--rose-dark)">Senha de Acesso</div>
+          <div class="form-row" style="margin-bottom:10px">
+            <div style="flex:1">
+              <label class="form-label">Senha atual</label>
+              <input type="password" class="form-input" id="cfg-senha-atual" placeholder="••••••••">
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom:10px">
+            <div style="flex:1">
+              <label class="form-label">Nova senha</label>
+              <input type="password" class="form-input" id="cfg-senha-nova" placeholder="••••••••">
+            </div>
+            <div style="flex:1">
+              <label class="form-label">Confirmar nova senha</label>
+              <input type="password" class="form-input" id="cfg-senha-conf" placeholder="••••••••">
+            </div>
+          </div>
+          <div class="login-erro" id="cfg-erro-acesso"></div>
+          <button class="btn btn-accent btn-sm" onclick="trocarSenhaAcesso()">Salvar nova senha</button>
+        </div>
+
+        <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);padding:20px">
+          <div style="font-size:13px;font-weight:500;margin-bottom:14px;color:var(--rose-dark)">Senha de Gerente</div>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;line-height:1.5">
+            Esta senha é exigida para alterar o campo "Vendedor" ao editar uma cliente.
+          </p>
+          <div class="form-row" style="margin-bottom:10px">
+            <div style="flex:1">
+              <label class="form-label">Senha de gerente atual</label>
+              <input type="password" class="form-input" id="cfg-ger-atual" placeholder="••••••••">
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom:10px">
+            <div style="flex:1">
+              <label class="form-label">Nova senha de gerente</label>
+              <input type="password" class="form-input" id="cfg-ger-nova" placeholder="••••••••">
+            </div>
+            <div style="flex:1">
+              <label class="form-label">Confirmar</label>
+              <input type="password" class="form-input" id="cfg-ger-conf" placeholder="••••••••">
+            </div>
+          </div>
+          <div class="login-erro" id="cfg-erro-gerente"></div>
+          <button class="btn btn-accent btn-sm" onclick="trocarSenhaGerente()">Salvar senha de gerente</button>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:480px;margin-top:16px">
+        <div class="card-title">☁️ Sincronização</div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;line-height:1.6">
+          Força a sincronização dos dados com a planilha Google Sheets.
+        </p>
+        <button class="btn btn-outline btn-sm" onclick="sincronizarAgora()">Sincronizar agora</button>
+      </div>
+    </div><!-- fim page-configuracoes -->
+
   </div><!-- content -->
 </div><!-- main -->
 
@@ -1580,18 +1814,28 @@ function clienteToRow(c) {
   });
 }
 
-// ── Carregar do Sheets ──
+// ── Carregar do Sheets via Apps Script doGet ──
 async function loadFromSheets() {
+  if (!window.GS_WEBAPP_URL) return null;
   setSyncStatus('syncing', 'Carregando...');
   try {
-    const rows = await gsRead(ABA_CLIENTES);
-    if (rows.length < 2) {
-      // Planilha vazia — inicializa com dados locais e faz upload
+    const r = await fetch(window.GS_WEBAPP_URL, { method: 'GET' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    if (!data || data.status === 'empty' || !data.rows || data.rows.length < 2) {
       setSyncStatus('local', 'Planilha vazia — dados locais');
       return null;
     }
-    const hdrs = rows[0];
-    const lista = rows.slice(1).map(r => rowToCliente(r, hdrs)).filter(c => c.nome);
+    const hdrs = data.rows[0];
+    const lista = data.rows.slice(1).map(r => rowToCliente(r, hdrs)).filter(c => c.nome);
+    // Carrega vendedores da nuvem se disponível
+    if (data.vendedores && data.vendedores.length > 0) {
+      const vNomes = data.vendedores.map(v => v[0]).filter(Boolean);
+      if (vNomes.length > 0) {
+        vendedores = vNomes;
+        saveVendedores();
+      }
+    }
     setSyncStatus('ok', 'Nuvem OK');
     return lista;
   } catch(e) {
@@ -2018,7 +2262,7 @@ function goPage(page) {
     if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(page)) n.classList.add('active');
   });
   currentPage = page;
-  const titles = {dashboard:'Dashboard',clientes:'Clientes',sugestoes:'Sugestões do Dia',compras:'Registrar Compra',inativas:'Clientes Inativas',aniversarios:'Aniversários',scripts:'Scripts de Atendimento',importar:'Importar Clientes',vendedores:'Gestão de Vendedores'};
+  const titles = {dashboard:'Dashboard',clientes:'Clientes',sugestoes:'Sugestões do Dia',compras:'Registrar Compra',inativas:'Clientes Inativas',aniversarios:'Aniversários',scripts:'Scripts de Atendimento',importar:'Importar Clientes',vendedores:'Gestão de Vendedores',configuracoes:'Configurações'};
   document.getElementById('page-title').textContent = titles[page] || page;
 
   if (page === 'clientes') { populateVendedorSelects(); renderTable(); }
@@ -2028,6 +2272,7 @@ function goPage(page) {
   if (page === 'inativas') { populateVendedorSelects(); renderInativas(); }
   if (page === 'aniversarios') renderAniversarios();
   if (page === 'vendedores') renderVendedores();
+  if (page === 'configuracoes') { /* campos limpos ao entrar */ }
 }
 
 function switchTab(tab, page) {
@@ -3007,6 +3252,144 @@ async function sincronizarAgora() {
   }
 }
 
+// ===================== SENHAS =====================
+
+// Hash simples (não criptográfico, só para ofuscar no localStorage)
+async function hashSenha(senha) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(senha + 'crmoderia_salt_2024');
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function getSenhaAcessoHash() {
+  return localStorage.getItem('crm_senha_acesso') || null;
+}
+
+function getSenhaGerenteHash() {
+  return localStorage.getItem('crm_senha_gerente') || null;
+}
+
+async function verificarSenha(digitada, tipoKey) {
+  const stored = localStorage.getItem(tipoKey);
+  if (!stored) {
+    // Sem senha definida — verifica contra padrão
+    const defaultHash = await hashSenha('moderia2024');
+    const gerenteDefault = await hashSenha('gerente2024');
+    if (tipoKey === 'crm_senha_acesso') return (await hashSenha(digitada)) === defaultHash;
+    if (tipoKey === 'crm_senha_gerente') return (await hashSenha(digitada)) === gerenteDefault;
+  }
+  return (await hashSenha(digitada)) === stored;
+}
+
+// ── LOGIN ──
+async function fazerLogin() {
+  const inp = document.getElementById('login-senha');
+  const erro = document.getElementById('login-erro');
+  const senha = inp.value;
+  if (!senha) { erro.textContent = 'Digite a senha.'; return; }
+
+  const ok = await verificarSenha(senha, 'crm_senha_acesso');
+  if (ok) {
+    document.getElementById('login-screen').classList.add('hidden');
+    inp.value = '';
+    erro.textContent = '';
+    // Carrega nuvem após login
+    loadFromSheets().then(lista => {
+      if (lista && lista.length > 0) { clientes = lista; saveLocal(); }
+      renderDashboard();
+      setSyncStatus(lista ? 'ok' : 'local');
+    }).catch(() => { renderDashboard(); setSyncStatus('local'); });
+  } else {
+    erro.textContent = 'Senha incorreta. Tente novamente.';
+    inp.value = '';
+    inp.focus();
+  }
+}
+
+// ── TROCAR SENHA DE ACESSO ──
+async function trocarSenhaAcesso() {
+  const atual = document.getElementById('cfg-senha-atual').value;
+  const nova  = document.getElementById('cfg-senha-nova').value;
+  const conf  = document.getElementById('cfg-senha-conf').value;
+  const erro  = document.getElementById('cfg-erro-acesso');
+
+  if (!atual || !nova || !conf) { erro.textContent = 'Preencha todos os campos.'; return; }
+  if (nova !== conf) { erro.textContent = 'A nova senha e a confirmação não coincidem.'; return; }
+  if (nova.length < 4) { erro.textContent = 'A senha deve ter ao menos 4 caracteres.'; return; }
+
+  const ok = await verificarSenha(atual, 'crm_senha_acesso');
+  if (!ok) { erro.textContent = 'Senha atual incorreta.'; return; }
+
+  const novoHash = await hashSenha(nova);
+  localStorage.setItem('crm_senha_acesso', novoHash);
+  erro.style.color = 'var(--green)';
+  erro.textContent = 'Senha alterada com sucesso!';
+  document.getElementById('cfg-senha-atual').value = '';
+  document.getElementById('cfg-senha-nova').value = '';
+  document.getElementById('cfg-senha-conf').value = '';
+  setTimeout(() => { erro.textContent = ''; erro.style.color = 'var(--red)'; }, 3000);
+}
+
+// ── TROCAR SENHA DE GERENTE ──
+async function trocarSenhaGerente() {
+  const atual = document.getElementById('cfg-ger-atual').value;
+  const nova  = document.getElementById('cfg-ger-nova').value;
+  const conf  = document.getElementById('cfg-ger-conf').value;
+  const erro  = document.getElementById('cfg-erro-gerente');
+
+  if (!atual || !nova || !conf) { erro.textContent = 'Preencha todos os campos.'; return; }
+  if (nova !== conf) { erro.textContent = 'A nova senha e a confirmação não coincidem.'; return; }
+  if (nova.length < 4) { erro.textContent = 'A senha deve ter ao menos 4 caracteres.'; return; }
+
+  const ok = await verificarSenha(atual, 'crm_senha_gerente');
+  if (!ok) { erro.textContent = 'Senha de gerente atual incorreta.'; return; }
+
+  const novoHash = await hashSenha(nova);
+  localStorage.setItem('crm_senha_gerente', novoHash);
+  erro.style.color = 'var(--green)';
+  erro.textContent = 'Senha de gerente alterada com sucesso!';
+  document.getElementById('cfg-ger-atual').value = '';
+  document.getElementById('cfg-ger-nova').value = '';
+  document.getElementById('cfg-ger-conf').value = '';
+  setTimeout(() => { erro.textContent = ''; erro.style.color = 'var(--red)'; }, 3000);
+}
+
+// ── MODAL GERENTE (para proteger campo vendedor) ──
+let _gerenteCallback = null;
+let _vendedorOriginal = null;
+
+function pedirSenhaGerente(callback) {
+  _gerenteCallback = callback;
+  document.getElementById('gerente-senha').value = '';
+  document.getElementById('gerente-erro').textContent = '';
+  document.getElementById('modal-gerente').classList.add('open');
+  setTimeout(() => document.getElementById('gerente-senha').focus(), 100);
+}
+
+async function confirmarGerente() {
+  const senha = document.getElementById('gerente-senha').value;
+  const erro  = document.getElementById('gerente-erro');
+  if (!senha) { erro.textContent = 'Digite a senha.'; return; }
+
+  const ok = await verificarSenha(senha, 'crm_senha_gerente');
+  if (ok) {
+    document.getElementById('modal-gerente').classList.remove('open');
+    if (_gerenteCallback) _gerenteCallback(true);
+    _gerenteCallback = null;
+  } else {
+    erro.textContent = 'Senha incorreta.';
+    document.getElementById('gerente-senha').value = '';
+  }
+}
+
+function cancelarGerente() {
+  document.getElementById('modal-gerente').classList.remove('open');
+  if (_gerenteCallback) _gerenteCallback(false);
+  _gerenteCallback = null;
+}
+
 // ===================== INIT =====================
 // Global click delegation for edit buttons
 document.addEventListener('click', function(e) {
@@ -3016,6 +3399,36 @@ document.addEventListener('click', function(e) {
   }
 });
 
+// Proteger campo vendedor: pede senha de gerente ao tentar mudar
+(function() {
+  let vendedorOriginal = null;
+  let vendedorLiberado = false;
+
+  document.addEventListener('focus', function(e) {
+    if (e.target && e.target.id === 'f-vendedor') {
+      vendedorOriginal = e.target.value;
+      vendedorLiberado = false;
+    }
+  }, true);
+
+  document.addEventListener('change', function(e) {
+    if (e.target && e.target.id === 'f-vendedor') {
+      if (vendedorLiberado) return; // já liberado nesta edição
+      const novoVal = e.target.value;
+      if (novoVal === vendedorOriginal) return; // não mudou
+
+      // Restaura valor enquanto pede senha
+      e.target.value = vendedorOriginal;
+      pedirSenhaGerente(function(ok) {
+        if (ok) {
+          vendedorLiberado = true;
+          e.target.value = novoVal;
+        }
+      });
+    }
+  });
+})();
+
 document.getElementById('sidebar-date').textContent = new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
 
 setTimeout(() => {
@@ -3024,18 +3437,10 @@ setTimeout(() => {
   if (sel) sel.innerHTML = [...clientes].sort((a,b) => a.nome.localeCompare(b.nome)).map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
 }, 100);
 
-// Tenta carregar da nuvem ao iniciar
-loadFromSheets().then(lista => {
-  if (lista && lista.length > 0) {
-    clientes = lista;
-    saveLocal();
-  }
-  renderDashboard();
-  setSyncStatus(lista ? 'ok' : 'local');
-}).catch(() => {
-  renderDashboard();
-  setSyncStatus('local');
-});
+// Mostra login ao iniciar (não carrega nuvem antes do login)
+document.getElementById('login-screen').classList.remove('hidden');
+// Foco no campo de senha
+setTimeout(() => { const inp = document.getElementById('login-senha'); if (inp) inp.focus(); }, 100);
 </script>
 </body>
 </html>

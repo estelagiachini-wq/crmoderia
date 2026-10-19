@@ -1828,7 +1828,7 @@ function loadFromSheets() {
       if (done) return;
       done = true;
       cleanup();
-      console.warn('Sheets load timeout');
+      console.warn('[CRModeria] Sheets TIMEOUT — sem resposta em 10s. URL=' + script.src);
       setSyncStatus('error', 'Offline — usando local');
       resolve(null);
     }, 10000);
@@ -1844,7 +1844,9 @@ function loadFromSheets() {
       done = true;
       cleanup();
       try {
+        console.log('[CRModeria] Sheets resposta:', JSON.stringify(data).substring(0, 300));
         if (!data || data.status === 'empty' || !data.rows || data.rows.length < 2) {
+          console.warn('[CRModeria] Planilha vazia ou sem dados. status=' + (data && data.status) + ' rows=' + (data && data.rows && data.rows.length));
           setSyncStatus('local', 'Planilha vazia — dados locais');
           return resolve(null);
         }
@@ -1867,12 +1869,13 @@ function loadFromSheets() {
       if (done) return;
       done = true;
       cleanup();
-      console.error('Sheets script load error');
+      console.error('[CRModeria] Sheets script load error. URL=' + script.src);
       setSyncStatus('error', 'Offline — usando local');
       resolve(null);
     };
 
     script.src = window.GS_WEBAPP_URL + '?callback=' + cbName;
+    console.log('[CRModeria] Carregando Sheets via JSONP:', script.src);
     document.head.appendChild(script);
   });
 }

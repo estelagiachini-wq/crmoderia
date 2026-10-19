@@ -1815,34 +1815,66 @@ function clienteToRow(c) {
 }
 
 // ── Carregar do Sheets via Apps Script doGet ──
-async function loadFromSheets() {
-  if (!window.GS_WEBAPP_URL) return null;
+// ── Carregar via JSONP (evita bloqueio de CORS) ──
+function loadFromSheets() {
+  if (!window.GS_WEBAPP_URL) return Promise.resolve(null);
   setSyncStatus('syncing', 'Carregando...');
-  try {
-    const r = await fetch(window.GS_WEBAPP_URL, { method: 'GET' });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const data = await r.json();
-    if (!data || data.status === 'empty' || !data.rows || data.rows.length < 2) {
-      setSyncStatus('local', 'Planilha vazia — dados locais');
-      return null;
+  return new Promise((resolve) => {
+    const cbName = '_gsCallback_' + Date.now();
+    const script = document.createElement('script');
+    let done = false;
+
+    const timeout = setTimeout(() => {
+      if (done) return;
+      done = true;
+      cleanup();
+      console.warn('Sheets load timeout');
+      setSyncStatus('error', 'Offline — usando local');
+      resolve(null);
+    }, 10000);
+
+    function cleanup() {
+      clearTimeout(timeout);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
     }
-    const hdrs = data.rows[0];
-    const lista = data.rows.slice(1).map(r => rowToCliente(r, hdrs)).filter(c => c.nome);
-    // Carrega vendedores da nuvem se disponível
-    if (data.vendedores && data.vendedores.length > 0) {
-      const vNomes = data.vendedores.map(v => v[0]).filter(Boolean);
-      if (vNomes.length > 0) {
-        vendedores = vNomes;
-        saveVendedores();
+
+    window[cbName] = function(data) {
+      if (done) return;
+      done = true;
+      cleanup();
+      try {
+        if (!data || data.status === 'empty' || !data.rows || data.rows.length < 2) {
+          setSyncStatus('local', 'Planilha vazia — dados locais');
+          return resolve(null);
+        }
+        const hdrs = data.rows[0];
+        const lista = data.rows.slice(1).map(r => rowToCliente(r, hdrs)).filter(c => c.nome);
+        if (data.vendedores && data.vendedores.length > 0) {
+          const vNomes = data.vendedores.map(v => v[0]).filter(Boolean);
+          if (vNomes.length > 0) { vendedores = vNomes; saveVendedores(); }
+        }
+        setSyncStatus('ok', 'Nuvem OK');
+        resolve(lista);
+      } catch(e) {
+        console.error('Sheets parse error:', e);
+        setSyncStatus('error', 'Erro ao ler nuvem');
+        resolve(null);
       }
-    }
-    setSyncStatus('ok', 'Nuvem OK');
-    return lista;
-  } catch(e) {
-    console.error('Sheets load error:', e);
-    setSyncStatus('error', 'Offline — usando local');
-    return null;
-  }
+    };
+
+    script.onerror = function() {
+      if (done) return;
+      done = true;
+      cleanup();
+      console.error('Sheets script load error');
+      setSyncStatus('error', 'Offline — usando local');
+      resolve(null);
+    };
+
+    script.src = window.GS_WEBAPP_URL + '?callback=' + cbName;
+    document.head.appendChild(script);
+  });
 }
 
 // ── Salvar no Sheets via Apps Script ──

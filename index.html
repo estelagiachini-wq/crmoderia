@@ -1788,21 +1788,36 @@ async function gsWrite(aba, rows) {
 // ── Converter linha → objeto cliente ──
 function rowToCliente(row, hdrs) {
   const obj = {};
-  hdrs.forEach((h, i) => obj[h] = row[i] || '');
+  hdrs.forEach((h, i) => {
+    // Mapeia tanto chaves originais quanto nomes amigáveis da planilha
+    obj[h] = row[i] || '';
+    obj[String(h).toLowerCase()] = row[i] || '';
+  });
+  // Mapeamento de nomes de colunas da planilha para campos internos
+  const nome = obj.nome || obj['nome'] || obj['Nome'] || '';
+  const classificacao = obj.classificacao || obj['Classificação'] || obj['classificacao'] || obj['classificação'] || 'C';
+  const vendedor = obj.vendedor || obj['Vendedor'] || '';
+  const tam1 = obj.tam1 || obj['Tamanho 1'] || obj['tamanho 1'] || '';
+  const tam2 = obj.tam2 || obj['Tamanho 2'] || obj['tamanho 2'] || '';
+  const jeans = obj.jeans || obj['Jeans'] || '';
+  const dataAtual = obj.dataatual || obj['Último Contato'] || obj['ultimo contato'] || obj.dataAtual || '';
+  const dataPassada = obj.datapassada || obj['Contato Anterior'] || obj['contato anterior'] || obj.dataPassada || '';
+  const perfil = obj.perfil || obj['Perfil'] || '';
+  const aniversario = obj.aniversario || obj['Aniversário'] || obj['aniversario'] || '';
   return {
     id:           parseInt(obj.id) || 0,
-    nome:         obj.nome,
-    classificacao:obj.classificacao || 'C',
-    vendedor:     obj.vendedor,
-    tam1:         obj.tam1,
-    tam2:         obj.tam2,
-    jeans:        obj.jeans,
-    dataAtual:    obj.dataAtual ? parseFloat(obj.dataAtual) : null,
-    dataPassada:  obj.dataPassada ? parseFloat(obj.dataPassada) : null,
-    perfil:       obj.perfil,
-    aniversario:  obj.aniversario,
-    totalCompras: parseFloat(obj.totalCompras) || 0,
-    frequencia:   parseInt(obj.frequencia) || 0,
+    nome:         nome,
+    classificacao: classificacao,
+    vendedor:     vendedor,
+    tam1:         tam1,
+    tam2:         String(tam2),
+    jeans:        String(jeans),
+    dataAtual:    dataAtual ? (isNaN(parseFloat(dataAtual)) ? dataAtual : parseFloat(dataAtual)) : null,
+    dataPassada:  dataPassada ? (isNaN(parseFloat(dataPassada)) ? dataPassada : parseFloat(dataPassada)) : null,
+    perfil:       perfil,
+    aniversario:  aniversario,
+    totalCompras: parseFloat(obj.totalCompras || obj['totalCompras'] || 0) || 0,
+    frequencia:   parseInt(obj.frequencia || obj['frequencia'] || 0) || 0,
     compras:      [],
   };
 }

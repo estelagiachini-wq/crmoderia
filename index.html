@@ -1785,15 +1785,55 @@ async function gsWrite(aba, rows) {
   setSyncStatus('error', 'Configure o Apps Script (ver instruções)');
 }
 
+// Colunas reais da aba Clientes. A gravação tem que usar estes nomes.
+const SHEET_HEADERS = ['Nome','Classificação','Vendedor','Tamanho 1','Tamanho 2','Jeans','Último Contato','Contato Anterior','Perfil','Aniversário'];
+
+function parseSheetDate(value) {
+  if (value === null || value === undefined || value === '') return null;
+  if (typeof value === 'number' && value > 20000 && value < 80000) return value;
+  const s = String(value).trim();
+  if (!s) return null;
+  if (/^\d+(\.\d+)?$/.test(s)) {
+    const n = parseFloat(s);
+    return (n > 20000 && n < 80000) ? n : null;
+  }
+  let y, m, d;
+  const br = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (br) { d = +br[1]; m = +br[2]; y = +br[3]; }
+  else if (iso) { y = +iso[1]; m = +iso[2]; d = +iso[3]; }
+  else return null;
+  return Math.round(Date.UTC(y, m - 1, d) / 86400000) + 25569;
+}
+
+function parseAniversario(value) {
+  if (!value) return '';
+  const s = String(value).trim();
+  const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) return iso[1] + '-' + iso[2] + '-' + iso[3];
+  const br = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (br) return br[3] + '-' + br[2].padStart(2, '0') + '-' + br[1].padStart(2, '0');
+  return s;
+}
+
+function excelToBRDate(serial) {
+  if (serial === null || serial === undefined || serial === '') return '';
+  if (typeof serial === 'string' && serial.indexOf('/') > -1) return serial;
+  const parsed = typeof serial === 'number' ? serial : parseSheetDate(serial);
+  const d = excelDateToJS(parsed);
+  if (!d || isNaN(d.getTime())) return '';
+  const dd = String(d.getUTCDate()).padStart(2, '0');
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+  return dd + '/' + mm + '/' + d.getUTCFullYear();
+}
+
 // ── Converter linha → objeto cliente ──
 function rowToCliente(row, hdrs) {
   const obj = {};
   hdrs.forEach((h, i) => {
-    // Mapeia tanto chaves originais quanto nomes amigáveis da planilha
     obj[h] = row[i] || '';
     obj[String(h).toLowerCase()] = row[i] || '';
   });
-  // Mapeamento de nomes de colunas da planilha para campos internos
   const nome = obj.nome || obj['nome'] || obj['Nome'] || '';
   const classificacao = obj.classificacao || obj['Classificação'] || obj['classificacao'] || obj['classificação'] || 'C';
   const vendedor = obj.vendedor || obj['Vendedor'] || '';
@@ -1805,19 +1845,19 @@ function rowToCliente(row, hdrs) {
   const perfil = obj.perfil || obj['Perfil'] || '';
   const aniversario = obj.aniversario || obj['Aniversário'] || obj['aniversario'] || '';
   return {
-    id:           parseInt(obj.id) || 0,
+    id:           parseInt(obj.id, 10) || 0,
     nome:         nome,
     classificacao: classificacao,
     vendedor:     vendedor,
     tam1:         tam1,
     tam2:         String(tam2),
     jeans:        String(jeans),
-    dataAtual:    dataAtual ? (isNaN(parseFloat(dataAtual)) ? dataAtual : parseFloat(dataAtual)) : null,
-    dataPassada:  dataPassada ? (isNaN(parseFloat(dataPassada)) ? dataPassada : parseFloat(dataPassada)) : null,
+    dataAtual:    parseSheetDate(dataAtual),
+    dataPassada:  parseSheetDate(dataPassada),
     perfil:       perfil,
-    aniversario:  aniversario,
+    aniversario:  parseAniversario(aniversario),
     totalCompras: parseFloat(obj.totalCompras || obj['totalCompras'] || 0) || 0,
-    frequencia:   parseInt(obj.frequencia || obj['frequencia'] || 0) || 0,
+    frequencia:   parseInt(obj.frequencia || obj['frequencia'] || 0, 10) || 0,
     compras:      [],
   };
 }
@@ -1847,7 +1887,7 @@ function loadFromSheets() {
       console.warn('[CRModeria] Sheets TIMEOUT — sem resposta em 10s. URL=' + script.src);
       setSyncStatus('error', 'Offline — usando local');
       resolve(null);
-    }, 10000);
+    }, 25000);
 
     function cleanup() {
       clearTimeout(timeout);
@@ -1867,7 +1907,11 @@ function loadFromSheets() {
           return resolve(null);
         }
         const hdrs = data.rows[0];
-        const lista = data.rows.slice(1).map(r => rowToCliente(r, hdrs)).filter(c => c.nome);
+        const lista = data.rows.slice(1).map((r, i) => {
+          const c = rowToCliente(r, hdrs);
+          if (!c.id) c.id = i + 1;
+          return c;
+        }).filter(c => c.nome);
         if (data.vendedores && data.vendedores.length > 0) {
           const vNomes = data.vendedores.map(v => v[0]).filter(Boolean);
           if (vNomes.length > 0) { vendedores = vNomes; saveVendedores(); }
@@ -1896,6 +1940,27 @@ function loadFromSheets() {
   });
 }
 
+function clienteToSheetRow(c) {
+  return [
+    c.nome || '',
+    c.classificacao || '',
+    c.vendedor || '',
+    c.tam1 || '',
+    c.tam2 || '',
+    c.jeans || '',
+    excelToBRDate(c.dataAtual),
+    excelToBRDate(c.dataPassada),
+    c.perfil || '',
+    c.aniversario || '',
+  ];
+}
+
+function vendedoresParaNuvem() {
+  const nomes = new Set(vendedores.filter(Boolean));
+  clientes.forEach(c => { if (c.vendedor) nomes.add(c.vendedor); });
+  return [...nomes];
+}
+
 // ── Salvar no Sheets via Apps Script ──
 async function saveToSheets() {
   if (!window.GS_WEBAPP_URL) {
@@ -1903,25 +1968,32 @@ async function saveToSheets() {
     setSyncStatus('local', 'Salvo local');
     return;
   }
+  if (!clientes.length) {
+    setSyncStatus('error', 'Nada para salvar');
+    return;
+  }
   setSyncStatus('syncing', 'Salvando...');
   try {
     const payload = {
-      clientes: clientes.map(clienteToRow),
-      compras,
-      vendedores,
-      headers_clientes: HDR_CLIENTES,
-      headers_compras:  HDR_COMPRAS,
+      clientes: clientes.map(clienteToSheetRow),
+      headers_clientes: SHEET_HEADERS,
+      vendedores: vendedoresParaNuvem(),
     };
-    // mode no-cors: não conseguimos ler a resposta mas o Apps Script recebe e salva
-    await fetch(window.GS_WEBAPP_URL, {
-      method:  'POST',
-      mode:    'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body:    JSON.stringify(payload),
+    const resp = await fetch(window.GS_WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
     });
+    const text = await resp.text();
+    let data = {};
+    try { data = JSON.parse(text); } catch (e) {}
+    if (!resp.ok || data.status === 'error') {
+      console.error('[CRModeria] Falha ao salvar na nuvem:', text.slice(0, 400));
+      setSyncStatus('error', 'Erro ao salvar na nuvem');
+      return;
+    }
     setSyncStatus('ok', 'Nuvem OK');
   } catch(e) {
-    saveLocal();
     setSyncStatus('error', 'Erro — salvo local');
     console.error('Sheets save error:', e);
   }

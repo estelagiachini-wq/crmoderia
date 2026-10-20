@@ -1,0 +1,5 @@
+
+# backup local da planilha — nao versionar dados de clientes
+backup-clientes-*.json
+
+backup-clientes-*.csv

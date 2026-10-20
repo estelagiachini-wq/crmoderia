@@ -1041,6 +1041,7 @@
     <div class="topbar-actions">
       <span id="sync-status" style="font-size:12px;color:var(--text-muted);margin-right:6px">💾 Local</span>
       <button class="btn btn-outline btn-sm" onclick="sincronizarAgora()">↻ Sincronizar</button>
+      <button class="btn btn-outline btn-sm" onclick="forcarSincronizacao()" style="background:#fff3cc;border-color:#9c6b00;color:#9c6b00" title="Apaga dados locais e baixa tudo da nuvem">⬇ Da Nuvem</button>
       <button class="btn btn-outline btn-sm" onclick="exportCSV()">↓ Exportar</button>
       <button class="btn btn-accent btn-sm" onclick="openModal('new')">+ Nova Cliente</button>
     </div>
@@ -3281,9 +3282,28 @@ async function sincronizarAgora() {
     clientes = lista;
     saveLocal();
     renderDashboard();
-    showToast('Dados sincronizados da nuvem!');
+    showToast('✅ ' + lista.length + ' clientes sincronizados da nuvem!');
+    setSyncStatus('ok', 'Nuvem OK');
   } else {
+    // Força nova leitura ignorando cache
+    console.log('[CRModeria] Sem dados na nuvem ou planilha vazia');
     setSyncStatus('local', 'Nada novo na nuvem');
+  }
+}
+
+async function forcarSincronizacao() {
+  // Limpa localStorage e busca tudo da nuvem
+  setSyncStatus('syncing', 'Forçando sincronização...');
+  const lista = await loadFromSheets();
+  if (lista && lista.length > 0) {
+    clientes = lista;
+    saveLocal();
+    renderDashboard();
+    showToast('✅ ' + lista.length + ' clientes carregados da nuvem!');
+    setSyncStatus('ok', 'Nuvem OK');
+  } else {
+    showToast('⚠️ Nenhum dado encontrado na nuvem');
+    setSyncStatus('local', 'Sem dados na nuvem');
   }
 }
 
